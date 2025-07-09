@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Logo Freelancer Simulator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -10,7 +10,7 @@
   <div id="main-container">
     <header>
       <h1 class="logo">LFS</h1>
-      <nav id="nav-menu">
+      <nav class="menu">
         <button class="tab-btn active" data-tab="inbox">Inbox</button>
         <button class="tab-btn" data-tab="store">Store</button>
         <button class="tab-btn" data-tab="projects">Projects</button>
@@ -20,32 +20,13 @@
     </header>
 
     <main id="content">Loading...</main>
-
     <div id="notifications"></div>
 
+    <!-- Always visible stats (bottom left) -->
     <div id="stats-panel">
-      <h4>Stats</h4>
-      <p>Projects: <span id="stat-projects">0</span></p>
-      <p>Clients: <span id="stat-clients">0</span></p>
-      <p>Rating: <span id="stat-rating">5.0</span> ★</p>
-    </div>
-  </div>
-
-  <!-- Admin Login Popup -->
-  <div id="admin-login" class="modal hidden">
-    <div class="modal-content">
-      <h2>Admin Login</h2>
-      <form id="admin-login-form">
-        <input id="admin-password" type="password" placeholder="Password" required />
-        <label class="checkbox-wrapper">
-          <input type="checkbox" id="show-password" />
-          <span>Show Password</span>
-        </label>
-        <div class="modal-buttons">
-          <button type="submit" class="btn">Login</button>
-          <button type="button" class="btn btn-cancel" id="admin-login-cancel">Cancel</button>
-        </div>
-      </form>
+      <div class="stat">💰 $0</div>
+      <div class="stat">⭐ 0.0</div>
+      <div class="stat">📁 0 Projects</div>
     </div>
   </div>
 
