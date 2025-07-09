@@ -156,3 +156,62 @@ main#content {
   display: block;
   margin-bottom: 0.3em;
 }
+/* === Notifications === */
+.notification {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  width: 300px;
+  background: #0f3a68;
+  border: 2px solid #4fc3f7;
+  border-radius: 12px;
+  box-shadow: 0 0 15px #4fc3f7aa;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.4s ease, transform 0.2s ease;
+  transform: translateY(100%) scale(0.95);
+  opacity: 0;
+  z-index: 9999;
+  color: #cce6ff;
+  cursor: pointer;
+}
+.notification.show {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #cce6ff;
+  cursor: pointer;
+}
+.notif-actions {
+  text-align: right;
+  margin-top: 0.5rem;
+}
+.deny-btn {
+  background: #13306a;
+  border: none;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  color: #ff7373;
+  font-weight: bold;
+  cursor: pointer;
+}
+.client-box {
+  background: #174e85;
+  padding: 0.5rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+.client-box.highlight {
+  box-shadow: 0 0 10px #4fc3f7;
+  transition: box-shadow 1.2s ease-out;
+}
