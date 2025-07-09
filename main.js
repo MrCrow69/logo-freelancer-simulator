@@ -1,149 +1,133 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const tabs = document.querySelectorAll(".tab-btn");
   const content = document.getElementById("content");
+  const tabs = document.querySelectorAll(".tab-btn");
   const notifications = document.getElementById("notifications");
 
-  const adminLoginModal = document.getElementById("admin-login");
-  const adminLoginForm = document.getElementById("admin-login-form");
-  const adminPasswordInput = document.getElementById("admin-password");
-  const adminLoginCancel = document.getElementById("admin-login-cancel");
-  const showPasswordCheckbox = document.getElementById("show-password");
-
-  const ADMIN_PASSWORD = "1234";
   let activeTab = "inbox";
-  let adminLoggedIn = false;
-  let clientIdCounter = 1;
+  const clientData = [];
+  const reviews = [];
 
-  function switchTab(newTab) {
-    if (newTab === activeTab) return;
-    const oldBtn = document.querySelector(`.tab-btn[data-tab="${activeTab}"]`);
-    const newBtn = document.querySelector(`.tab-btn[data-tab="${newTab}"]`);
-    oldBtn?.classList.remove("active");
-    newBtn?.classList.add("active");
-
-    content.style.opacity = 0;
+  function switchTab(tab) {
+    if (tab === activeTab) return;
+    tabs.forEach((btn) => btn.classList.remove("active"));
+    document.querySelector(`.tab-btn[data-tab="${tab}"]`)?.classList.add("active");
+    content.classList.add("fade-out");
     setTimeout(() => {
-      content.innerHTML = generateContent(newTab);
-      content.style.opacity = 1;
+      loadTabContent(tab);
+      content.classList.remove("fade-out");
+      content.classList.add("fade-in");
     }, 300);
-    activeTab = newTab;
+    activeTab = tab;
   }
 
-  function generateContent(tab) {
-    switch (tab) {
-      case "inbox": return renderInbox();
-      case "store": return "<h2>Store</h2><p>Coming soon: upgrades, perks, and more!</p>";
-      case "projects": return "<h2>Projects</h2><p>Work on accepted client jobs here.</p>";
-      case "stats": return "<h2>Stats</h2><p>Track your progress, earnings, and milestones.</p>";
-      case "settings": return "<h2>Settings</h2><p>Configure your preferences and account.</p>";
-      default: return "<p>Unknown tab.</p>";
+  function loadTabContent(tab) {
+    if (tab === "inbox") renderInbox();
+    else if (tab === "store") content.innerHTML = "<p>Store logic coming soon.</p>";
+    else if (tab === "projects") content.innerHTML = "<p>No projects in progress yet.</p>";
+    else if (tab === "reviews") renderReviews();
+    else if (tab === "settings") content.innerHTML = "<p>Settings coming soon.</p>";
+    else content.innerHTML = "<p>Unknown tab.</p>";
+  }
+
+  function createNotification(message, options = {}) {
+    const notif = document.createElement("div");
+    notif.className = "notification";
+    notif.textContent = message;
+    if (options.type) notif.classList.add(`notification-${options.type}`);
+    notifications.appendChild(notif);
+
+    if (options.onClick) {
+      notif.style.cursor = "pointer";
+      notif.addEventListener("click", () => {
+        options.onClick();
+        notif.style.opacity = "0";
+        setTimeout(() => notif.remove(), 500);
+      });
+    }
+
+    setTimeout(() => {
+      notif.style.opacity = "0";
+      setTimeout(() => notif.remove(), 1000);
+    }, options.duration || 7000);
+  }
+
+  function addClient(name, company, description, budget) {
+    const id = `client-${Date.now()}`;
+    clientData.push({ id, name, company, description, budget });
+    if (activeTab !== "inbox") {
+      createNotification(`New client: ${name}`, {
+        type: "info",
+        onClick: () => {
+          switchTab("inbox");
+          setTimeout(() => scrollToClient(id), 400);
+        }
+      });
+    } else {
+      renderInbox();
+      setTimeout(() => scrollToClient(id), 400);
+    }
+  }
+
+  function scrollToClient(id) {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.classList.add("highlight");
+      setTimeout(() => element.classList.remove("highlight"), 2000);
     }
   }
 
   function renderInbox() {
-    return `
-      <h2>Inbox</h2>
-      <div class="inbox-list">
-        ${generateClientHTML()}
+    content.innerHTML = clientData.map(client => `
+      <div class="client-card" id="${client.id}">
+        <h3>${client.name} (${client.company})</h3>
+        <p>${client.description}</p>
+        <strong>$${client.budget}</strong>
+      </div>
+    `).join("") || "<p>No clients yet.</p>";
+  }
+
+  function renderReviews() {
+    const avg = reviews.length
+      ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+      : "0.0";
+    const stars = Math.round(avg);
+    content.innerHTML = `
+      <div class="review-summary">
+        <h2>${avg} / 5</h2>
+        <div class="stars">${"★".repeat(stars)}${"☆".repeat(5 - stars)}</div>
+      </div>
+      <div class="review-list">
+        ${reviews.map(r => `
+          <div class="review">
+            <strong>${r.client}</strong>
+            <div class="stars">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
+            <p>${r.text}</p>
+          </div>
+        `).join("")}
       </div>
     `;
   }
 
-  function generateClientHTML() {
-    const name = getRandomName();
-    const company = getRandomCompany();
-    const description = getRandomDescription();
-    const budget = `$${Math.floor(Math.random() * 900 + 100)}`;
-
-    return `
-      <div class="client-card">
-        <strong>${name}</strong> from <em>${company}</em><br/>
-        <p>${description}</p>
-        <button class="btn">Accept – ${budget}</button>
-      </div>
-    `;
+  function simulateIncomingClient() {
+    const names = ["John Doe", "Lisa Chen", "Raj Patel", "Ava Stone"];
+    const companies = ["Nova Designs", "PixelPeak", "HexaCorp", "Lume Labs"];
+    const descs = ["Needs a tech logo", "Wants modern minimalist design", "Looking for animated branding", "Needs urgent rebranding"];
+    const name = names[Math.floor(Math.random() * names.length)];
+    const company = companies[Math.floor(Math.random() * companies.length)];
+    const description = descs[Math.floor(Math.random() * descs.length)];
+    const budget = Math.floor(Math.random() * 100) + 150;
+    addClient(name, company, description, budget);
   }
 
-  // AI-like random generators
-  function getRandomName() {
-    const names = ["Ava Miller", "Eli Chen", "Sofia Garcia", "Noah Patel", "Leo Smith"];
-    return names[Math.floor(Math.random() * names.length)];
-  }
+  // Trigger a new client every 15 seconds for demo
+  setInterval(simulateIncomingClient, 15000);
 
-  function getRandomCompany() {
-    const companies = ["GlowTech", "Hyperloop Labs", "QuantumRise", "Nimbus Works", "PixelNet"];
-    return companies[Math.floor(Math.random() * companies.length)];
-  }
-
-  function getRandomDescription() {
-    const descs = [
-      "We're launching a new eco-friendly product and need a minimal yet vibrant logo.",
-      "Looking to rebrand our entire visual identity with a sleek, futuristic touch.",
-      "We want something bold and memorable for our AI startup.",
-      "A modern design for our app that's launching next month.",
-      "Logo must include a subtle nod to sustainability and innovation."
-    ];
-    return descs[Math.floor(Math.random() * descs.length)];
-  }
-
-  function createNotification(text, type = "info", duration = 5000) {
-    const notif = document.createElement("div");
-    notif.className = `notification notification-${type}`;
-    notif.textContent = text;
-    notifications.appendChild(notif);
-    setTimeout(() => {
-      notif.style.opacity = "0";
-      setTimeout(() => notif.remove(), 500);
-    }, duration);
-  }
-
-  function openAdminLogin() {
-    adminLoginModal.classList.remove("hidden");
-    adminPasswordInput.value = "";
-    adminPasswordInput.focus();
-  }
-
-  function closeAdminLogin() {
-    adminLoginModal.classList.add("hidden");
-  }
-
-  function openAdminPanel() {
-    if (!adminLoggedIn) {
-      openAdminLogin();
-    } else {
-      createNotification("Admin panel opened (dev placeholder)");
-    }
-  }
-
-  adminLoginCancel.addEventListener("click", closeAdminLogin);
-
-  adminLoginForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (adminPasswordInput.value === ADMIN_PASSWORD) {
-      adminLoggedIn = true;
-      closeAdminLogin();
-      createNotification("Access granted", "info");
-    } else {
-      alert("Incorrect password.");
-    }
+  // Bind tab buttons
+  tabs.forEach(btn => {
+    btn.addEventListener("click", () => switchTab(btn.dataset.tab));
   });
 
-  showPasswordCheckbox.addEventListener("change", () => {
-    adminPasswordInput.type = showPasswordCheckbox.checked ? "text" : "password";
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.ctrlKey && e.shiftKey && e.code === "KeyA") {
-      e.preventDefault();
-      openAdminPanel();
-    }
-  });
-
-  tabs.forEach(tabBtn => {
-    tabBtn.addEventListener("click", () => {
-      switchTab(tabBtn.dataset.tab);
-    });
-  });
-
-  switchTab(activeTab);
+  // Startup
+  switchTab("inbox");
 });

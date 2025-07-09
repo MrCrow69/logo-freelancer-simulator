@@ -2,24 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Logo Freelancer Simulator</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1 class="logo">LFS</h1>
-    <nav>
-      <button class="tab-btn active" data-tab="inbox">Inbox</button>
-      <button class="tab-btn" data-tab="store">Store</button>
-      <button class="tab-btn" data-tab="projects">Projects</button>
-      <button class="tab-btn" data-tab="stats">Stats</button>
-      <button class="tab-btn" data-tab="settings">Settings</button>
-    </nav>
-  </header>
+  <div id="main-container">
+    <header>
+      <h1 class="logo">LFS</h1>
+      <nav id="nav-menu">
+        <button class="tab-btn active" data-tab="inbox">Inbox</button>
+        <button class="tab-btn" data-tab="store">Store</button>
+        <button class="tab-btn" data-tab="projects">Projects</button>
+        <button class="tab-btn" data-tab="reviews">Reviews</button>
+        <button class="tab-btn" data-tab="settings">Settings</button>
+      </nav>
+    </header>
 
-  <main id="content">Loading...</main>
-  <div id="notifications"></div>
+    <main id="content">Loading...</main>
+
+    <div id="notifications"></div>
+
+    <div id="stats-panel">
+      <h4>Stats</h4>
+      <p>Projects: <span id="stat-projects">0</span></p>
+      <p>Clients: <span id="stat-clients">0</span></p>
+      <p>Rating: <span id="stat-rating">5.0</span> ★</p>
+    </div>
+  </div>
 
   <!-- Admin Login Popup -->
   <div id="admin-login" class="modal hidden">

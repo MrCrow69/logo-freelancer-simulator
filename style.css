@@ -3,41 +3,53 @@
 }
 body {
   margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background-color: #0e1525;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to bottom right, #0a0f1f, #0e1525);
   color: #dce8ff;
   overflow-x: hidden;
-  -webkit-tap-highlight-color: transparent;
 }
+
 header {
-  background: linear-gradient(90deg, #005aff, #0a0f1f);
+  background: linear-gradient(90deg, #004eff, #001c3d);
   padding: 0.8em 1.2em;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 .logo {
-  font-size: 1.5em;
+  position: absolute;
+  left: 20px;
+  font-size: 1.6em;
   font-weight: bold;
   color: #ffffff;
 }
-nav button {
+#nav-menu {
+  display: flex;
+  gap: 1em;
+}
+.tab-btn {
   background: none;
   border: none;
-  color: #ffffff;
   font-weight: bold;
-  margin: 0 0.5em;
+  font-size: 1em;
+  color: #ffffff;
   cursor: pointer;
   transition: 0.3s;
+  padding: 0.5em 1em;
+  border-radius: 8px;
 }
-nav button.active,
-nav button:hover {
-  text-shadow: 0 0 6px #00aaff;
+.tab-btn.active {
+  background-color: #0066ff;
+  color: #ffffff;
+}
+.tab-btn:hover {
+  background-color: #003a99;
 }
 
 main {
-  padding: 1.5em;
+  padding: 2em;
   transition: opacity 0.3s ease;
+  min-height: 60vh;
 }
 
 /* Notifications */
@@ -56,6 +68,19 @@ main {
   border-radius: 6px;
   box-shadow: 0 0 10px rgba(0, 128, 255, 0.3);
   transition: opacity 0.5s ease-in-out;
+}
+
+/* Stats Panel */
+#stats-panel {
+  position: fixed;
+  bottom: 1em;
+  left: 1em;
+  background: #13203d;
+  padding: 1em;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 128, 255, 0.25);
+  font-size: 0.9em;
+  z-index: 10;
 }
 
 /* Modal */
@@ -107,18 +132,17 @@ main {
   width: 16px;
   height: 16px;
   border-radius: 4px;
-  border: 2px solid #0072ff;
-  background: transparent;
-  cursor: pointer;
+  border: 2px solid #0070ff;
+  background: #0e1525;
   position: relative;
 }
 .checkbox-wrapper input[type="checkbox"]:checked::before {
   content: "";
   position: absolute;
-  top: 2px;
-  left: 5px;
-  width: 4px;
-  height: 8px;
+  left: 4px;
+  top: 1px;
+  width: 6px;
+  height: 10px;
   border: solid #00aaff;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
