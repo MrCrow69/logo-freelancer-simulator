@@ -1,97 +1,226 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const tabs = document.querySelectorAll(".tab-btn");
-  const content = document.getElementById("content");
-  const notifications = document.getElementById("notifications");
+/* Base */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: "Roboto", "Segoe UI", sans-serif;
+  background-color: #0e1525;
+  color: #dce8ff;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+header {
+  background: linear-gradient(90deg, #005aff, #0a0f1f);
+  padding: 1em 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+.logo {
+  font-size: 1.8em;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+}
+nav {
+  display: flex;
+  gap: 1.25em;
+}
+nav button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.3em 0.5em;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+nav button .icon {
+  width: 20px;
+  height: 20px;
+  fill: #a0c8ff;
+  transition: fill 0.3s ease;
+}
+nav button.active,
+nav button:hover {
+  background-color: rgba(0, 90, 255, 0.15);
+  text-shadow: 0 0 8px #00aaff;
+}
+nav button.active .icon,
+nav button:hover .icon {
+  fill: #00aaff;
+}
 
-  const adminLoginModal = document.getElementById("admin-login");
-  const adminLoginForm = document.getElementById("admin-login-form");
-  const adminPasswordInput = document.getElementById("admin-password");
-  const adminLoginCancel = document.getElementById("admin-login-cancel");
-  const showPasswordCheckbox = document.getElementById("show-password");
+/* Main Content */
+main {
+  padding: 2em 2.5em;
+  min-height: 420px;
+  outline: none;
+  background: linear-gradient(135deg, #121b38, #1c2a5f);
+  border-radius: 12px;
+  margin: 1.5em auto;
+  max-width: 900px;
+  box-shadow: 0 0 20px rgba(0, 90, 255, 0.25);
+  color: #cfdfff;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: opacity 0.4s ease;
+}
 
-  const ADMIN_PASSWORD = "1234"; // Dev password
+/* Notifications */
+#notifications {
+  position: fixed;
+  bottom: 1.25em;
+  right: 1.25em;
+  z-index: 999;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  pointer-events: none;
+}
+.notification {
+  background: #1c2947;
+  border-left: 5px solid #005aff;
+  color: #e3eaff;
+  padding: 1em 1.25em;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0, 90, 255, 0.5);
+  font-weight: 600;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+  pointer-events: auto;
+}
 
-  let activeTab = "inbox";
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(10, 15, 30, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(14px);
+  z-index: 10000;
+  transition: opacity 0.3s ease;
+}
+.modal.hidden {
+  display: none;
+  opacity: 0;
+}
+.modal-content {
+  background: #13203d;
+  padding: 2em 2.5em;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+  color: #e1e9ff;
+  font-family: 'Share Tech Mono', monospace;
+}
+.modal-content h2 {
+  margin-top: 0;
+  font-weight: 700;
+  font-size: 1.8em;
+  color: #00aaff;
+  user-select: none;
+}
+.modal-content input[type="password"],
+.modal-content input[type="text"] {
+  width: 100%;
+  padding: 0.65em 0.8em;
+  margin: 0.75em 0 1.2em;
+  border: none;
+  border-radius: 8px;
+  background-color: #0f1a2e;
+  color: #cbd6f1;
+  font-size: 1rem;
+  font-family: 'Share Tech Mono', monospace;
+  transition: background-color 0.3s ease;
+}
+.modal-content input[type="password"]:focus,
+.modal-content input[type="text"]:focus {
+  outline: 2px solid #00aaff;
+  background-color: #122843;
+}
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 1rem;
+  color: #a0c8ff;
+  user-select: none;
+  cursor: pointer;
+}
+.checkbox-wrapper input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #1a2a53;
+  border: 2.5px solid #005aff;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.25s ease, border-color 0.3s ease;
+}
+.checkbox-wrapper input[type="checkbox"]:checked {
+  background-color: #005aff;
+  border-color: #00aaff;
+}
+.checkbox-wrapper input[type="checkbox"]:checked::after {
+  content: "✔";
+  color: #dce8ff;
+  font-weight: 700;
+  font-size: 1.2rem;
+  position: absolute;
+  top: 0;
+  left: 4px;
+  user-select: none;
+}
+.checkbox-wrapper input[type="checkbox"]:focus {
+  outline: 3px solid #00aaff;
+  outline-offset: 2px;
+}
 
-  // -- Smooth tab switching --
-  function switchTab(newTab) {
-    if (newTab === activeTab) return;
-    const oldBtn = document.querySelector(`.tab-btn[data-tab="${activeTab}"]`);
-    const newBtn = document.querySelector(`.tab-btn[data-tab="${newTab}"]`);
-
-    oldBtn?.classList.remove("active");
-    newBtn?.classList.add("active");
-
-    content.style.opacity = 0;
-    setTimeout(() => {
-      content.innerHTML = `<p>Loading ${newTab} content...</p>`;
-      content.style.opacity = 1;
-    }, 300);
-
-    activeTab = newTab;
-  }
-
-  // Initial load
-  switchTab(activeTab);
-
-  tabs.forEach(btn =>
-    btn.addEventListener("click", () => switchTab(btn.dataset.tab))
-  );
-
-  // -- Notification system --
-  function createNotification(message, type = "info", duration = 4000) {
-    const notif = document.createElement("div");
-    notif.className = `notification notification-${type}`;
-    notif.textContent = message;
-    notifications.appendChild(notif);
-
-    setTimeout(() => {
-      notif.style.opacity = 0;
-      setTimeout(() => notif.remove(), 500);
-    }, duration);
-  }
-
-  // -- Admin panel logic --
-  let adminLoggedIn = false;
-
-  function openAdminLogin() {
-    adminLoginModal.classList.remove("hidden");
-    adminPasswordInput.value = "";
-    adminPasswordInput.focus();
-  }
-
-  function closeAdminLogin() {
-    adminLoginModal.classList.add("hidden");
-  }
-
-  adminLoginForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (adminPasswordInput.value === ADMIN_PASSWORD) {
-      adminLoggedIn = true;
-      closeAdminLogin();
-      createNotification("Admin Access Granted", "info");
-    } else {
-      createNotification("Incorrect Password", "warning");
-      adminPasswordInput.value = "";
-    }
-  });
-
-  adminLoginCancel.addEventListener("click", closeAdminLogin);
-
-  showPasswordCheckbox.addEventListener("change", () => {
-    adminPasswordInput.type = showPasswordCheckbox.checked ? "text" : "password";
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.ctrlKey && e.shiftKey && e.code === "KeyA") {
-      e.preventDefault();
-      openAdminLogin();
-    }
-  });
-
-  // Expose notification system globally if needed
-  window.LFS = {
-    switchTab,
-    createNotification
-  };
-});
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5em;
+}
+.btn {
+  background-color: #005aff;
+  border: none;
+  color: white;
+  padding: 0.7em 1.4em;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+.btn:hover,
+.btn:focus {
+  background-color: #007eff;
+  outline: none;
+}
+.btn-cancel {
+  background-color: #222;
+}
+.btn-cancel:hover,
+.btn-cancel:focus {
+  background-color: #444;
+  outline: none;
+}
