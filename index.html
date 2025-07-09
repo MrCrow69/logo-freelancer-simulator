@@ -5,35 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Logo Freelancer Simulator</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <div class="logo">LFS</div>
-    <nav class="menu">
-      <button class="tab-btn" data-tab="inbox">Inbox</button>
-      <button class="tab-btn" data-tab="projects">Projects</button>
-      <button class="tab-btn" data-tab="store">Store</button>
-      <button class="tab-btn" data-tab="workers">Workers</button>
-      <button class="tab-btn" data-tab="stats">Stats</button>
-      <button class="tab-btn" data-tab="settings">Settings</button>
-    </nav>
-  </header>
-  <main id="content">Loading...</main>
-  <div id="notifications"></div>
-  <div id="admin-login" class="hidden">
-    <form id="admin-login-form">
-      <h2>Admin Login</h2>
-      <input type="password" id="admin-password" placeholder="Password" />
-      <label><input type="checkbox" id="show-password" /> Show password</label>
-      <div class="admin-actions">
-        <button type="submit">Login</button>
-        <button type="button" id="admin-login-cancel">Cancel</button>
-      </div>
-    </form>
+  <div id="main-container">
+    <header>
+      <h1 class="logo">LFS</h1>
+      <nav>
+        <button class="tab-btn active" data-tab="inbox">Inbox</button>
+        <button class="tab-btn" data-tab="store">Store</button>
+        <button class="tab-btn" data-tab="projects">Projects</button>
+        <button class="tab-btn" data-tab="stats">Stats</button>
+        <button class="tab-btn" data-tab="settings">Settings</button>
+      </nav>
+    </header>
+    <main id="content">Loading...</main>
+    <div id="notifications"></div>
   </div>
+
+  <!-- Admin Login Popup -->
+  <div id="admin-login" class="modal hidden">
+    <div class="modal-content">
+      <h2>Admin Login</h2>
+      <form id="admin-login-form">
+        <input id="admin-password" type="password" placeholder="Password" required />
+        <label class="checkbox-wrapper">
+          <input type="checkbox" id="show-password" />
+          <span>Show Password</span>
+        </label>
+        <div class="modal-buttons">
+          <button type="submit" class="btn">Login</button>
+          <button type="button" class="btn btn-cancel" id="admin-login-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="main.js"></script>
-  <script src="game.js"></script>
 </body>
 </html>

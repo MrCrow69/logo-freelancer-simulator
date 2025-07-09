@@ -1,18 +1,18 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".tab-btn");
   const content = document.getElementById("content");
   const notifications = document.getElementById("notifications");
-  const ADMIN_PASSWORD = "logolancer_admin1";
 
+  // Admin Modal Elements
   const adminLoginModal = document.getElementById("admin-login");
   const adminLoginForm = document.getElementById("admin-login-form");
   const adminPasswordInput = document.getElementById("admin-password");
   const adminLoginCancel = document.getElementById("admin-login-cancel");
   const showPasswordCheckbox = document.getElementById("show-password");
 
+  const ADMIN_PASSWORD = "1234";
+
   let activeTab = "inbox";
-  let adminLoggedIn = false;
 
   function switchTab(tab) {
     if (tab === activeTab) return;
@@ -34,55 +34,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
   switchTab(activeTab);
 
-  function createNotification(text, type = "") {
-    const div = document.createElement("div");
-    div.className = `notification ${type ? "notification-" + type : ""}`;
-    div.textContent = text;
-    notifications.appendChild(div);
+  // Notifications
+  function createNotification(text, options = {}) {
+    const notif = document.createElement("div");
+    notif.className = "notification";
+    notif.textContent = text;
+    if (options.type) notif.classList.add(`notification-${options.type}`);
+    notifications.appendChild(notif);
+
     setTimeout(() => {
-      div.style.opacity = 0;
-      setTimeout(() => div.remove(), 1000);
-    }, 5000);
+      notif.style.opacity = "0";
+      setTimeout(() => notif.remove(), 500);
+    }, options.duration || 5000);
   }
 
-  function openAdminPanel() {
-    if (!adminLoggedIn) {
-      adminLoginModal.classList.remove("hidden");
-      adminPasswordInput.value = "";
-      adminPasswordInput.focus();
-    } else {
-      createNotification("Admin Panel Opened", "info");
-    }
+  // Admin Access
+  function openAdminLogin() {
+    adminLoginModal.classList.remove("hidden");
+    adminPasswordInput.value = "";
+    adminPasswordInput.focus();
   }
 
-  adminLoginCancel.addEventListener("click", () => {
+  function closeAdminLogin() {
     adminLoginModal.classList.add("hidden");
+  }
+
+  adminLoginCancel.addEventListener("click", closeAdminLogin);
+  showPasswordCheckbox.addEventListener("change", () => {
+    adminPasswordInput.type = showPasswordCheckbox.checked ? "text" : "password";
   });
 
   adminLoginForm.addEventListener("submit", (e) => {
     e.preventDefault();
     if (adminPasswordInput.value === ADMIN_PASSWORD) {
-      adminLoggedIn = true;
-      adminLoginModal.classList.add("hidden");
-      openAdminPanel();
+      closeAdminLogin();
+      createNotification("Admin access granted", { type: "info" });
     } else {
-      alert("Incorrect password.");
+      createNotification("Incorrect password", { type: "warning" });
     }
-  });
-
-  showPasswordCheckbox.addEventListener("change", () => {
-    adminPasswordInput.type = showPasswordCheckbox.checked ? "text" : "password";
   });
 
   document.addEventListener("keydown", (e) => {
     if (e.ctrlKey && e.shiftKey && e.code === "KeyA") {
       e.preventDefault();
-      openAdminPanel();
+      openAdminLogin();
     }
   });
 
-  window.LFS = {
-    switchTab,
-    createNotification
-  };
+  window.LFS = { switchTab, createNotification };
 });
