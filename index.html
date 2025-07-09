@@ -1,60 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Logo Freelancer Simulator</title>
-<link rel="stylesheet" href="styles.css" />
-<link rel="icon" href="assets/icons/favicon.ico" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Logo Freelancer Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
+  <div id="app">
+    <header>
+      <h1 id="logo">Logo Freelancer Simulator</h1>
+      <nav>
+        <button class="tab-btn active" data-tab="inbox">Inbox</button>
+        <button class="tab-btn" data-tab="projects">Projects</button>
+        <button class="tab-btn" data-tab="store">Store</button>
+        <button class="tab-btn" data-tab="workers">Workers</button>
+        <button class="tab-btn" data-tab="stats">Stats</button>
+        <button class="tab-btn" data-tab="settings">Settings</button>
+        <button class="tab-btn" data-tab="achievements">Achievements</button>
+      </nav>
+    </header>
 
-<header id="header">
-  <div id="logo" tabindex="0" aria-label="Logo Freelancer Simulator">
-    <img src="assets/icons/logo.svg" alt="Logo Freelancer Simulator" />
+    <main id="content">
+      <p>Loading inbox...</p>
+    </main>
+
+    <div id="notifications"></div>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login" class="modal hidden">
+      <form id="admin-login-form">
+        <h2>Admin Login</h2>
+        <input type="password" id="admin-password" placeholder="Password" />
+        <label><input type="checkbox" id="show-password"> Show password</label>
+        <div class="modal-buttons">
+          <button type="submit">Login</button>
+          <button type="button" id="admin-login-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
   </div>
 
-  <nav id="main-menu" role="navigation" aria-label="Main menu">
-    <button class="tab-btn active" data-tab="inbox" aria-selected="true">Inbox</button>
-    <button class="tab-btn" data-tab="projects">Projects</button>
-    <button class="tab-btn" data-tab="store">Store</button>
-    <button class="tab-btn" data-tab="workers">Workers</button>
-    <button class="tab-btn" data-tab="stats">Stats</button>
-    <button class="tab-btn" data-tab="settings">Settings</button>
-    <button id="achievements-btn" class="tab-btn" data-tab="achievements">Achievements</button>
-  </nav>
-</header>
-
-<main id="content" role="main">
-  <!-- Tabs content injected here dynamically -->
-</main> 
-
-<!-- Notifications container -->
-<div id="notifications" aria-live="polite" aria-atomic="true"></div>
-
-<!-- Admin login popup -->
-<div id="admin-login" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="admin-login-title">
-  <div class="modal-content">
-    <h2 id="admin-login-title">Admin Login</h2>
-    <form id="admin-login-form" autocomplete="off">
-      <input type="password" id="admin-password" placeholder="Password" aria-label="Admin password" autocomplete="new-password" />
-      <label><input type="checkbox" id="show-password" /> Show Password</label>
-      <button type="submit">Login</button>
-      <button type="button" id="admin-login-cancel">Cancel</button>
-    </form>
-  </div>
-</div>
-
-<!-- Server update overlay -->
-<div id="server-update-overlay" class="modal hidden" aria-hidden="true">
-  <div class="modal-content">
-    <h2>Servers Updating</h2>
-    <p>Sorry for the inconvenience. New things coming soon!</p>
-  </div>
-</div>
-
-<script src="script.js" defer></script>
+  <script src="script.js"></script>
 </body>
 </html>
-<script src="game.js" defer></script>
-<script src="main.js" defer></script>
