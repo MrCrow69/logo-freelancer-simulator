@@ -1,107 +1,473 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Logo Freelancer Simulator</title>
-  <style>
-    body {
-      margin: 0; 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0e1525;
-      color: #dce8ff;
-      overflow-x: hidden;
-    }
-    header {
-      background: linear-gradient(90deg, #005aff, #0a0f1f);
-      padding: 0.8em 1.2em;
-      display: flex;
-      justify-content: center; /* center the menu */
-      gap: 1em;
-    }
-    .tab-btn {
-      background: none;
-      border: none;
-      color: #ffffff;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 1rem;
-      padding: 0.5em 1em;
-      transition: color 0.3s, text-shadow 0.3s;
-      border-radius: 6px;
-    }
-    .tab-btn:hover {
-      text-shadow: 0 0 6px #00aaff;
-      color: #00aaff;
-    }
-    .tab-btn.active {
-      color: #00d0ff;
-      font-size: 1.1rem;
-      text-shadow: 0 0 10px #00d0ff;
-      position: relative;
-      top: 2px;
-    }
-    .tab-btn:focus {
-      outline: none;
-      box-shadow: none;
-    }
-    #content {
-      padding: 1.5em;
-      min-height: 400px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Logo Freelancer Simulator</title>
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #091426, #001f5b);
+    color: #dce8ff;
+    overflow-x: hidden;
+    user-select: none;
+  }
+  header {
+    background: linear-gradient(90deg, #005aff, #0a0f1f);
+    padding: 0.8em 1.2em;
+    display: flex;
+    justify-content: center;
+    gap: 1.5em;
+    align-items: center;
+  }
+  header h1.logo {
+    color: #fff;
+    font-weight: 900;
+    font-size: 1.7rem;
+    letter-spacing: 0.1em;
+    margin-right: 2em;
+    user-select: text;
+  }
+  nav {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+  }
+  button.tab-btn {
+    background: none;
+    border: none;
+    color: #c0d9ff;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.6em 1.2em;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    transition: 
+      color 0.3s ease, 
+      background-color 0.3s ease, 
+      box-shadow 0.3s ease,
+      transform 0.15s ease;
+    user-select: none;
+  }
+  button.tab-btn:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  button.tab-btn:hover:not(.active) {
+    color: #00bbff;
+  }
+  button.tab-btn.active {
+    color: #00e0ff;
+    background: rgba(0, 224, 255, 0.15);
+    box-shadow: 0 0 15px #00e0ffaa;
+    transform: translateY(-2px);
+  }
+  main#content {
+    padding: 1.5em 2em;
+    min-height: 420px;
+    font-size: 1rem;
+    font-weight: 400;
+    background: rgba(5, 10, 25, 0.5);
+    margin: 1em 2em;
+    border-radius: 16px;
+    box-shadow: 0 0 30px #004b9b66 inset;
+    user-select: text;
+    transition: opacity 0.4s ease;
+  }
+
+  /* Icons for tabs */
+  .tab-icon {
+    width: 18px;
+    height: 18px;
+    fill: #c0d9ff;
+    transition: fill 0.3s ease;
+  }
+  button.tab-btn.active .tab-icon {
+    fill: #00e0ff;
+  }
+
+  /* Stats panel fixed bottom-left */
+  #stats-panel {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    background: rgba(0, 224, 255, 0.15);
+    color: #00e0ff;
+    padding: 1em 1.3em;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 0 15px #00e0ffcc;
+    user-select: none;
+    width: 220px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  /* Notifications container */
+  #notifications {
+    position: fixed;
+    bottom: 1em;
+    right: 1em;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    z-index: 1100;
+  }
+  /* Notification boxes */
+  .notification {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 0.8em 1.2em;
+    color: #e0f7ff;
+    box-shadow: 0 0 15px 2px rgba(255, 255, 255, 0.3);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: opacity 0.7s ease;
+    user-select: none;
+    position: relative;
+  }
+  .notification:hover {
+    box-shadow: 0 0 22px 4px #00e0ffcc;
+    color: #00e0ff;
+  }
+  .notification .close-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: #aaddffcc;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .notification .close-btn:hover {
+    color: #00e0ff;
+  }
+
+  /* Admin modal */
+  .modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10, 15, 30, 0.85);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .modal.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-content {
+    background: #13203d;
+    padding: 2.5em 3em;
+    border-radius: 16px;
+    width: 420px;
+    box-shadow: 0 0 30px #00e0ffbb;
+    color: #cceeff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+  }
+  .modal-content h2 {
+    margin-top: 0;
+    font-weight: 900;
+    font-size: 1.7rem;
+    color: #00e0ff;
+    text-align: center;
+  }
+  .modal-content form {
+    margin-top: 1.5em;
+  }
+  .modal-content input[type="password"] {
+    width: 100%;
+    padding: 0.7em 1em;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 12px;
+    background-color: #0f1a2e;
+    color: #dce8ff;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    font-family: monospace;
+    box-shadow: inset 0 0 6px #004b9b;
+    transition: box-shadow 0.25s ease;
+  }
+  .modal-content input[type="password"]:focus {
+    outline: none;
+    box-shadow: 0 0 14px #00e0ff;
+  }
+  .checkbox-wrapper {
+    margin-top: 1em;
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font-weight: 600;
+    color: #88ccffcc;
+    user-select: none;
+  }
+  .checkbox-wrapper input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #00e0ff;
+    cursor: pointer;
+  }
+  .modal-buttons {
+    margin-top: 1.8em;
+    display: flex;
+    justify-content: space-between;
+  }
+  .btn {
+    background-color: #005aff;
+    border: none;
+    color: white;
+    padding: 0.8em 1.8em;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+  }
+  .btn:hover {
+    background-color: #00bbff;
+  }
+  .btn-cancel {
+    background-color: #222;
+  }
+  .btn-cancel:hover {
+    background-color: #444;
+  }
+
+</style>
 </head>
 <body>
 
 <header>
-  <button class="tab-btn active" data-tab="inbox">Inbox</button>
-  <button class="tab-btn" data-tab="store">Store</button>
-  <button class="tab-btn" data-tab="projects">Projects</button>
-  <button class="tab-btn" data-tab="reviews">Reviews</button>
-  <button class="tab-btn" data-tab="settings">Settings</button>
+  <h1 class="logo" aria-label="Logo Freelancer Simulator">LFS</h1>
+  <nav>
+    <button class="tab-btn active" data-tab="inbox" aria-current="page" aria-label="Inbox">
+      <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6h-4l-2-2H10L8 6H4v12h16z"/></svg> Inbox
+    </button>
+    <button class="tab-btn" data-tab="store" aria-label="Store">
+      <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18v11H3z"/></svg> Store
+    </button>
+    <button class="tab-btn" data-tab="projects" aria-label="Projects">
+      <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7v7c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7z"/></svg> Projects
+    </button>
+    <button class="tab-btn" data-tab="reviews" aria-label="Reviews">
+      <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27L18.18 21 16.54 13.97 22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/></svg> Reviews
+    </button>
+    <button class="tab-btn" data-tab="settings" aria-label="Settings">
+      <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 0 0 0 8 4 4 0 0 0 0-8zm0 10a8 8 0 0 1-6.32-3.16l1.42-1.42A6 6 0 0 0 12 16a6 6 0 0 0 4.9-2.58l1.42 1.42A8 8 0 0 1 12 18z"/></svg> Settings
+    </button>
+  </nav>
 </header>
 
-<main id="content">Loading Inbox content...</main>
+<main id="content" role="main" tabindex="0" aria-live="polite" aria-atomic="true">
+  Loading Inbox content...
+</main>
+
+<!-- Stats Panel bottom-left -->
+<div id="stats-panel" aria-label="Player stats">
+  <div><strong>Projects Completed:</strong> 0</div>
+  <div><strong>Reputation:</strong> 0</div>
+  <div><strong>Balance:</strong> $0</div>
+</div>
+
+<!-- Notifications container -->
+<div id="notifications" role="region" aria-live="assertive" aria-relevant="additions"></div>
+
+<!-- Admin Login Modal -->
+<div id="admin-login" class="modal" role="dialog" aria-modal="true" aria-labelledby="admin-login-title" aria-hidden="true">
+  <div class="modal-content">
+    <h2 id="admin-login-title">Admin Login</h2>
+    <form id="admin-login-form" autocomplete="off" novalidate>
+      <input id="admin-password" type="password" placeholder="Password" required aria-describedby="show-password-label" aria-autocomplete="none" />
+      <label class="checkbox-wrapper" for="show-password-checkbox" id="show-password-label">
+        <input type="checkbox" id="show-password-checkbox" />
+        Show Password
+      </label>
+      <div class="modal-buttons">
+        <button type="submit" class="btn">Login</button>
+        <button type="button" class="btn btn-cancel" id="admin-login-cancel">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script>
-  // Tab logic
-  const tabs = document.querySelectorAll(".tab-btn");
-  const content = document.getElementById("content");
-  let activeTab = "inbox";
+  (() => {
+    const tabs = document.querySelectorAll(".tab-btn");
+    const content = document.getElementById("content");
+    const notifications = document.getElementById("notifications");
+    const statsPanel = document.getElementById("stats-panel");
 
-  function switchTab(tab) {
-    if (tab === activeTab) return;
+    const adminLoginModal = document.getElementById("admin-login");
+    const adminLoginForm = document.getElementById("admin-login-form");
+    const adminPasswordInput = document.getElementById("admin-password");
+    const adminLoginCancel = document.getElementById("admin-login-cancel");
+    const showPasswordCheckbox = document.getElementById("show-password-checkbox");
 
-    document.querySelector(`.tab-btn.active`)?.classList.remove("active");
-    const newBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
-    if(newBtn) newBtn.classList.add("active");
+    const ADMIN_PASSWORD = "logolancer_admin1";
 
-    content.style.opacity = 0;
-    setTimeout(() => {
-      content.textContent = `Loading ${tab} content...`;
-      content.style.opacity = 1;
-    }, 250);
+    let activeTab = "inbox";
+    let adminLoggedIn = false;
 
-    activeTab = tab;
-  }
-
-  tabs.forEach(btn => {
-    btn.addEventListener("click", () => switchTab(btn.dataset.tab));
-  });
-
-  // Admin panel open placeholder
-  function openAdminPanel() {
-    alert("Admin panel opened.");
-  }
-
-  // Admin shortcut Ctrl+Shift+A
-  document.addEventListener("keydown", (e) => {
-    if (e.ctrlKey && e.shiftKey && e.code === "KeyA") {
-      e.preventDefault();
-      openAdminPanel();
+    // Blur background when admin modal is active
+    function setBodyBlur(active) {
+      if (active) {
+        document.body.style.filter = "blur(4px)";
+        document.body.style.pointerEvents = "none";
+        adminLoginModal.setAttribute("aria-hidden", "false");
+      } else {
+        document.body.style.filter = "none";
+        document.body.style.pointerEvents = "auto";
+        adminLoginModal.setAttribute("aria-hidden", "true");
+      }
     }
-  });
+
+    // Tab switch with smooth fade
+    function switchTab(tab) {
+      if (tab === activeTab) return;
+
+      document.querySelector("button.tab-btn.active")?.classList.remove("active");
+      const newBtn = document.querySelector(`button.tab-btn[data-tab="${tab}"]`);
+      if (newBtn) {
+        newBtn.classList.add("active");
+        newBtn.setAttribute("aria-current", "page");
+      }
+
+      content.style.opacity = 0;
+      setTimeout(() => {
+        // Real content loading logic placeholder
+        content.innerHTML = `<p>Loading ${tab} content...</p>`;
+        content.style.opacity = 1;
+      }, 300);
+
+      activeTab = tab;
+    }
+
+    tabs.forEach(btn => {
+      btn.addEventListener("click", () => {
+        switchTab(btn.dataset.tab);
+      });
+    });
+
+    // Notifications
+    function createNotification(text, onClick) {
+      const notif = document.createElement("div");
+      notif.className = "notification";
+      notif.textContent = text;
+
+      const closeBtn = document.createElement("button");
+      closeBtn.className = "close-btn";
+      closeBtn.setAttribute("aria-label", "Close notification");
+      closeBtn.innerHTML = "&times;";
+      closeBtn.onclick = (e) => {
+        e.stopPropagation();
+        notif.remove();
+      };
+      notif.appendChild(closeBtn);
+
+      notif.onclick = () => {
+        if (onClick) onClick();
+        notif.style.opacity = "0";
+        setTimeout(() => notif.remove(), 500);
+      };
+
+      notifications.appendChild(notif);
+
+      // Auto remove after 8 seconds
+      setTimeout(() => {
+        notif.style.opacity = "0";
+        setTimeout(() => notif.remove(), 500);
+      }, 8000);
+    }
+
+    // Admin panel open/close
+    function openAdminPanel() {
+      if (!adminLoggedIn) {
+        openAdminLogin();
+        return;
+      }
+      createNotification("Admin panel opened (placeholder)", () => {});
+    }
+
+    function openAdminLogin() {
+      adminLoginModal.classList.add("active");
+      setBodyBlur(true);
+      adminPasswordInput.value = "";
+      adminPasswordInput.focus();
+    }
+
+    function closeAdminLogin() {
+      adminLoginModal.classList.remove("active");
+      setBodyBlur(false);
+    }
+
+    adminLoginCancel.addEventListener("click", closeAdminLogin);
+
+    showPasswordCheckbox.addEventListener("change", () => {
+      adminPasswordInput.type = showPasswordCheckbox.checked ? "text" : "password";
+    });
+
+    adminLoginForm.addEventListener("submit", e => {
+      e.preventDefault();
+      if (adminPasswordInput.value === ADMIN_PASSWORD) {
+        adminLoggedIn = true;
+        closeAdminLogin();
+        openAdminPanel();
+      } else {
+        alert("Incorrect password.");
+        adminPasswordInput.value = "";
+        adminPasswordInput.focus();
+      }
+    });
+
+    // Keyboard shortcut Ctrl+Shift+A to open admin
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.shiftKey && e.code === "KeyA") {
+        e.preventDefault();
+        openAdminPanel();
+      }
+    });
+
+    // Remove focus outlines on mouse click but keep for keyboard
+    function handleFirstTab(e) {
+      if (e.key === "Tab") {
+        document.body.classList.add("user-is-tabbing");
+        window.removeEventListener("keydown", handleFirstTab);
+      }
+    }
+    window.addEventListener("keydown", handleFirstTab);
+
+    // Initialization
+    switchTab(activeTab);
+
+    // Expose globally if needed
+    window.LFS = {
+      switchTab,
+      createNotification,
+      openAdminPanel,
+    };
+
+  })();
 </script>
 
 </body>
