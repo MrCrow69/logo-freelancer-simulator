@@ -2,34 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Logo Freelancer Simulator</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0e1525;
+      color: #dce8ff;
+      overflow-x: hidden;
+    }
+    header {
+      background: linear-gradient(90deg, #005aff, #0a0f1f);
+      padding: 0.8em 1.2em;
+      display: flex;
+      justify-content: center; /* center the menu */
+      gap: 1em;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.5em 1em;
+      transition: color 0.3s, text-shadow 0.3s;
+      border-radius: 6px;
+    }
+    .tab-btn:hover {
+      text-shadow: 0 0 6px #00aaff;
+      color: #00aaff;
+    }
+    .tab-btn.active {
+      color: #00d0ff;
+      font-size: 1.1rem;
+      text-shadow: 0 0 10px #00d0ff;
+      position: relative;
+      top: 2px;
+    }
+    .tab-btn:focus {
+      outline: none;
+      box-shadow: none;
+    }
+    #content {
+      padding: 1.5em;
+      min-height: 400px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  </style>
 </head>
 <body>
-  <div id="main-container">
-    <header>
-      <h1 class="logo">LFS</h1>
-      <nav class="menu">
-        <button class="tab-btn active" data-tab="inbox">Inbox</button>
-        <button class="tab-btn" data-tab="store">Store</button>
-        <button class="tab-btn" data-tab="projects">Projects</button>
-        <button class="tab-btn" data-tab="reviews">Reviews</button>
-        <button class="tab-btn" data-tab="settings">Settings</button>
-      </nav>
-    </header>
 
-    <main id="content">Loading...</main>
-    <div id="notifications"></div>
+<header>
+  <button class="tab-btn active" data-tab="inbox">Inbox</button>
+  <button class="tab-btn" data-tab="store">Store</button>
+  <button class="tab-btn" data-tab="projects">Projects</button>
+  <button class="tab-btn" data-tab="reviews">Reviews</button>
+  <button class="tab-btn" data-tab="settings">Settings</button>
+</header>
 
-    <!-- Always visible stats (bottom left) -->
-    <div id="stats-panel">
-      <div class="stat">💰 $0</div>
-      <div class="stat">⭐ 0.0</div>
-      <div class="stat">📁 0 Projects</div>
-    </div>
-  </div>
+<main id="content">Loading Inbox content...</main>
 
-  <script src="main.js"></script>
+<script>
+  // Tab logic
+  const tabs = document.querySelectorAll(".tab-btn");
+  const content = document.getElementById("content");
+  let activeTab = "inbox";
+
+  function switchTab(tab) {
+    if (tab === activeTab) return;
+
+    document.querySelector(`.tab-btn.active`)?.classList.remove("active");
+    const newBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+    if(newBtn) newBtn.classList.add("active");
+
+    content.style.opacity = 0;
+    setTimeout(() => {
+      content.textContent = `Loading ${tab} content...`;
+      content.style.opacity = 1;
+    }, 250);
+
+    activeTab = tab;
+  }
+
+  tabs.forEach(btn => {
+    btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+  });
+
+  // Admin panel open placeholder
+  function openAdminPanel() {
+    alert("Admin panel opened.");
+  }
+
+  // Admin shortcut Ctrl+Shift+A
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && e.shiftKey && e.code === "KeyA") {
+      e.preventDefault();
+      openAdminPanel();
+    }
+  });
+</script>
+
 </body>
 </html>
