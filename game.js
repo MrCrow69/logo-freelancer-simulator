@@ -83,5 +83,5 @@ function showNotification(client) {
 setInterval(() => {
   const client = generateClient();
   showNotification(client);
-}, 10000); // every 10 seconds
+}, 1000); // every 10 seconds
 
