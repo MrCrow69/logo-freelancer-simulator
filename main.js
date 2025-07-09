@@ -2,6 +2,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const content = document.getElementById("content");
   const tabs = document.querySelectorAll(".tab-btn");
   const notifications = document.getElementById("notifications");
+  
+  document.addEventListener("keydown", (e) => {
+  if (e.ctrlKey && e.shiftKey && e.code === "KeyA") {
+    e.preventDefault();
+    openAdminPanel();
+  }
+});
+
 
   let activeTab = "inbox";
   const clientData = [];

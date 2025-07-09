@@ -38,6 +38,10 @@ header {
   padding: 0.5em 1em;
   border-radius: 5px;
 }
+.tab-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
 .menu .tab-btn:hover {
   background: rgba(255, 255, 255, 0.1);
 }
