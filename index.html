@@ -2,68 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Logo Freelancer Simulator</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Google Fonts for elegant styling -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <div id="main-container">
-    <header>
-      <h1 class="logo">LFS</h1>
-      <nav>
-        <button class="tab-btn active" data-tab="inbox" aria-selected="true" aria-label="Inbox">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 8v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8H1l10-6 10 6z"/></svg>
-          Inbox
-        </button>
-        <button class="tab-btn" data-tab="store" aria-label="Store">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 6h18v2H3zm2 3h14v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9z"/></svg>
-          Store
-        </button>
-        <button class="tab-btn" data-tab="projects" aria-label="Projects">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 4h16v2H4zM4 8h16v2H4zM4 12h16v2H4zM4 16h16v2H4z"/></svg>
-          Projects
-        </button>
-        <button class="tab-btn" data-tab="stats" aria-label="Stats">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 20h2V10H4v10zm6 0h2V4h-2v16zm6 0h2v-6h-2v6z"/></svg>
-          Stats
-        </button>
-        <button class="tab-btn" data-tab="settings" aria-label="Settings">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm9 4a7.94 7.94 0 0 0-.18-1.5l2.12-1.66-2-3.46-2.49 1a8 8 0 0 0-2.52-1.46L14 2h-4l-.96 3.88a7.95 7.95 0 0 0-2.52 1.46l-2.49-1-2 3.46 2.12 1.66A7.94 7.94 0 0 0 3 12a7.94 7.94 0 0 0 .18 1.5l-2.12 1.66 2 3.46 2.49-1a8 8 0 0 0 2.52 1.46L10 22h4l.96-3.88a7.95 7.95 0 0 0 2.52-1.46l2.49 1 2-3.46-2.12-1.66c.12-.48.18-.98.18-1.5z"/></svg>
-          Settings
-        </button>
-      </nav>
-    </header>
-    <main id="content" role="main" tabindex="0">Loading Inbox...</main>
-    <div id="notifications" aria-live="polite" aria-atomic="true"></div>
-  </div>
+  <header>
+    <h1 class="logo">LFS</h1>
+    <nav>
+      <button class="tab-btn active" data-tab="inbox">Inbox</button>
+      <button class="tab-btn" data-tab="store">Store</button>
+      <button class="tab-btn" data-tab="projects">Projects</button>
+      <button class="tab-btn" data-tab="stats">Stats</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+    </nav>
+  </header>
+
+  <main id="content">Loading...</main>
+  <div id="notifications"></div>
 
   <!-- Admin Login Popup -->
-  <div id="admin-login" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="admin-login-title">
+  <div id="admin-login" class="modal hidden">
     <div class="modal-content">
-      <h2 id="admin-login-title">Admin Login</h2>
-      <form id="admin-login-form" autocomplete="off">
-        <input
-          id="admin-password"
-          type="password"
-          placeholder="Password"
-          required
-          aria-label="Admin password"
-          autocomplete="new-password"
-        />
-        <label class="checkbox-wrapper" for="show-password">
+      <h2>Admin Login</h2>
+      <form id="admin-login-form">
+        <input id="admin-password" type="password" placeholder="Password" required />
+        <label class="checkbox-wrapper">
           <input type="checkbox" id="show-password" />
           <span>Show Password</span>
         </label>
         <div class="modal-buttons">
-          <button type="submit" class="btn btn-primary">Login</button>
+          <button type="submit" class="btn">Login</button>
           <button type="button" class="btn btn-cancel" id="admin-login-cancel">Cancel</button>
         </div>
       </form>
     </div>
   </div>
 
-  <script src="main.js" defer></script>
+  <script src="main.js"></script>
 </body>
 </html>
