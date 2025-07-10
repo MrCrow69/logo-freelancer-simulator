@@ -61,6 +61,8 @@ const globalMsgInputContainer = document.getElementById("global-msg-input-contai
 const globalMsgInput = document.getElementById("global-msg-input");
 const btnSendGlobalMsg = document.getElementById("btn-send-global-msg");
 
+const wrongPasswordBox = document.getElementById("wrong-password-box");
+
 const ADMIN_PASSWORD = "1234";
 let adminLoggedIn = false;
 
@@ -104,6 +106,20 @@ function closeAdminPanel() {
   setBodyBlur(false);
 }
 
+// Animate wrong password input: shake + fade red then back to normal
+function animateWrongPassword(input) {
+  input.classList.add("wrong-password");
+  wrongPasswordBox.classList.add("active");
+
+  setTimeout(() => {
+    input.classList.remove("wrong-password");
+  }, 1000);
+
+  setTimeout(() => {
+    wrongPasswordBox.classList.remove("active");
+  }, 2200);
+}
+
 // Event listeners
 adminLoginCancel.addEventListener("click", hideAdminLogin);
 
@@ -119,7 +135,7 @@ adminLoginForm.addEventListener("submit", e => {
     openAdminPanel();
     alert("Admin login successful.");
   } else {
-    alert("Incorrect password.");
+    animateWrongPassword(adminPasswordInput);
     adminPasswordInput.value = "";
     adminPasswordInput.focus();
   }
