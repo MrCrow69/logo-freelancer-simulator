@@ -1,32 +1,28 @@
 const express = require('express');
 const http = require('http');
-const path = require('path');
 const { Server } = require('socket.io');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+  },
+});
 
-// Serve static frontend files from /public
+// Serve static frontend files
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Handle Socket.IO connections
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
-  // Listen for admin commands from client
-  socket.on('admin:updateServers', () => {
-    console.log('Admin requested server update');
-    io.emit('updateServers');
-  });
-
-  socket.on('admin:globalMessage', (message) => {
-    console.log('Admin sent global message:', message);
-    io.emit('globalMessage', message);
-  });
-
-  socket.on('admin:resetLeaderboard', () => {
-    console.log('Admin reset leaderboard');
-    io.emit('leaderboardReset');
+  socket.on('adminCommand', (data) => {
+    const { command, message } = data;
+    if (command === 'updateServers') io.emit('serverUpdate');
+    if (command === 'resetLeaderboard') io.emit('leaderboardReset');
+    if (command === 'globalMessage') io.emit('globalMessage', message);
   });
 
   socket.on('disconnect', () => {
@@ -34,7 +30,8 @@ io.on('connection', (socket) => {
   });
 });
 
+// Start the server
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
