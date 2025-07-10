@@ -67,7 +67,7 @@ let adminLoggedIn = false;
 
 function setBodyBlur(active) {
   if(active) {
-    document.body.style.filter = "blur(4px)";
+    document.body.style.filter = "blur(2px)";
     document.body.style.pointerEvents = "none";
   } else {
     document.body.style.filter = "none";
