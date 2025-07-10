@@ -1,24 +1,12 @@
 {
   "name": "logo-freelancer-simulator",
   "version": "1.0.0",
-  "main": "main.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MrCrow69/logo-freelancer-simulator.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/MrCrow69/logo-freelancer-simulator/issues"
-  },
-  "homepage": "https://github.com/MrCrow69/logo-freelancer-simulator#readme",
-  "description": "",
   "dependencies": {
-    "express": "^5.1.0",
-    "socket.io": "^4.8.1"
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
   }
 }
