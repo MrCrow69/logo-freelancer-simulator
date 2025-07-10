@@ -62,7 +62,7 @@ const globalMsgInputContainer = document.getElementById("global-msg-input-contai
 const globalMsgInput = document.getElementById("global-msg-input");
 const btnSendGlobalMsg = document.getElementById("btn-send-global-msg");
 
-const ADMIN_PASSWORD = "logolancer_admin1";
+const ADMIN_PASSWORD = "1234";
 let adminLoggedIn = false;
 
 function setBodyBlur(active) {
