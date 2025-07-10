@@ -46,7 +46,6 @@ function loadTabContent(tab) {
 loadTabContent(activeTab);
 
 // === Admin Modal Logic ===
-
 const adminLoginModal = document.getElementById("admin-login");
 const adminPanelModal = document.getElementById("admin-panel");
 const adminPasswordInput = document.getElementById("admin-password");
@@ -66,13 +65,8 @@ const ADMIN_PASSWORD = "1234";
 let adminLoggedIn = false;
 
 function setBodyBlur(active) {
-  if(active) {
-    document.body.style.filter = "blur(2px)";
-    document.body.style.pointerEvents = "none";
-  } else {
-    document.body.style.filter = "none";
-    document.body.style.pointerEvents = "auto";
-  }
+  document.body.style.filter = active ? "blur(2px)" : "none";
+  document.body.style.pointerEvents = active ? "none" : "auto";
 }
 
 // Show admin login modal
@@ -93,7 +87,7 @@ function hideAdminLogin() {
 
 // Show admin panel modal
 function openAdminPanel() {
-  if(!adminLoggedIn) {
+  if (!adminLoggedIn) {
     showAdminLogin();
     return;
   }
@@ -110,6 +104,7 @@ function closeAdminPanel() {
   setBodyBlur(false);
 }
 
+// Event listeners
 adminLoginCancel.addEventListener("click", hideAdminLogin);
 
 showPasswordCheckbox.addEventListener("change", () => {
@@ -118,10 +113,11 @@ showPasswordCheckbox.addEventListener("change", () => {
 
 adminLoginForm.addEventListener("submit", e => {
   e.preventDefault();
-  if(adminPasswordInput.value === ADMIN_PASSWORD) {
+  if (adminPasswordInput.value === ADMIN_PASSWORD) {
     adminLoggedIn = true;
     hideAdminLogin();
     openAdminPanel();
+    alert("Admin login successful.");
   } else {
     alert("Incorrect password.");
     adminPasswordInput.value = "";
@@ -129,7 +125,11 @@ adminLoginForm.addEventListener("submit", e => {
   }
 });
 
-btnCloseAdmin.addEventListener("click", closeAdminPanel);
+btnCloseAdmin.addEventListener("click", () => {
+  adminLoggedIn = false;
+  closeAdminPanel();
+  alert("Logged out successfully.");
+});
 
 btnUpdateServers.addEventListener("click", () => {
   sendAdminCommand("updateServers");
@@ -149,7 +149,7 @@ btnGlobalMessage.addEventListener("click", () => {
 
 btnSendGlobalMsg.addEventListener("click", () => {
   const msg = globalMsgInput.value.trim();
-  if(msg.length === 0) {
+  if (msg.length === 0) {
     alert("Please enter a message before sending.");
     globalMsgInput.focus();
     return;
@@ -163,15 +163,14 @@ btnSendGlobalMsg.addEventListener("click", () => {
 
 // Keyboard shortcut Ctrl+Shift+A to open admin modal or panel
 document.addEventListener("keydown", e => {
-  if(e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
     e.preventDefault();
-    if(adminLoggedIn) openAdminPanel();
+    if (adminLoggedIn) openAdminPanel();
     else showAdminLogin();
   }
 });
 
 // --- Socket.IO Client Setup ---
-// Use relative URL for deployment
 const socket = io("https://54e8d8d0-27d5-47ba-a3b6-27b89ee9c980-00-1c8ney7773dr3.kirk.replit.dev", {
   transports: ["websocket"],
 });
@@ -182,12 +181,12 @@ socket.on("globalMessage", message => {
 
 socket.on("leaderboardReset", () => {
   alert("Leaderboard has been reset by Admin.");
-  // Add reset logic here
+  // Add leaderboard reset logic here
 });
 
 socket.on("updateServers", () => {
   alert("Server has been updated.");
-  // Add update logic here
+  // Add server update logic here
 });
 
 // Send commands to server

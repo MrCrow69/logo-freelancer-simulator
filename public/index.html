@@ -376,7 +376,7 @@
     <button id="btn-update-servers" type="button">Update Servers</button>
     <button id="btn-global-message" type="button">Send Global Message</button>
     <button id="btn-reset-leaderboard" type="button">Reset Leaderboard</button>
-    <button id="btn-close-admin" type="button">Close Panel</button>
+    <button id="btn-close-admin" type="button">Logout</button>
 
     <div id="global-msg-input-container">
       <input type="text" id="global-msg-input" placeholder="Enter global message..." aria-label="Global message input" />
@@ -386,7 +386,6 @@
 </div>
 
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-
 
 <script>
 (() => {
@@ -415,10 +414,10 @@
 
   let loggedIn = false;
 
-// Initialize socket.io with Replit backend URL
-const socket = io("https://54e8d8d0-27d5-47ba-a3b6-27b89ee9c980-00-1c8ney7773dr3.kirk.replit.dev", {
-  transports: ["websocket"],
-}); 
+  // Initialize socket.io with Replit backend URL
+  const socket = io("https://54e8d8d0-27d5-47ba-a3b6-27b89ee9c980-00-1c8ney7773dr3.kirk.replit.dev", {
+    transports: ["websocket"],
+  }); 
 
   // Tabs switch handler
   function loadTabContent(tab) {
@@ -526,7 +525,9 @@ const socket = io("https://54e8d8d0-27d5-47ba-a3b6-27b89ee9c980-00-1c8ney7773dr3
 
   // Admin panel buttons
   btnCloseAdmin.addEventListener("click", () => {
+    loggedIn = false;
     closeAdminPanel();
+    showNotification("Logged out successfully.", "info");
   });
 
   btnUpdateServers.addEventListener("click", () => {
