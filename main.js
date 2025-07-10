@@ -65,3 +65,32 @@ window.addEventListener("mousedown", () => {
 window.addEventListener("keydown", () => {
   document.body.classList.remove("using-mouse");
 });
+
+// --- Socket.IO connection and admin commands ---
+// Make sure to include socket.io client script in your HTML for io() to work
+const socket = io('http://localhost:3000'); 
+
+// Listen for global message event broadcast from server
+socket.on('globalMessage', message => {
+  alert(`Global message: ${message}`); // TODO: Replace alert with nicer UI display
+});
+
+// Listen for leaderboard reset or server update events as needed
+socket.on('leaderboardReset', () => {
+  alert('Leaderboard has been reset by Admin.');
+});
+
+socket.on('updateServers', () => {
+  alert('Server has been updated.');
+});
+
+// For admin panel: emit commands to server
+function sendAdminCommand(command, payload = {}) {
+  socket.emit(`admin:${command}`, payload);
+}
+
+// Example usage (you need to wire these to buttons in your admin panel):
+// sendAdminCommand('updateServers');
+// sendAdminCommand('globalMessage', 'Hello players!');
+// sendAdminCommand('resetLeaderboard');
+

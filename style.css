@@ -156,7 +156,8 @@ main#content {
   display: block;
   margin-bottom: 0.3em;
 }
-/* === Notifications === */
+
+/* === Notifications (updated snippet) === */
 .notification {
   position: fixed;
   right: 1rem;

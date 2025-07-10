@@ -157,7 +157,7 @@
     color: #00e0ff;
   }
 
-  /* Admin modal */
+  /* Admin login modal */
   .modal {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -254,6 +254,63 @@
     background-color: #444;
   }
 
+  /* NEW Admin Panel Modal (after login) */
+  #admin-panel {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10, 15, 30, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  #admin-panel.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #admin-panel .admin-content {
+    background: #0a1430;
+    padding: 2rem 3rem;
+    border-radius: 15px;
+    box-shadow: 0 0 25px #00e0ffcc;
+    color: #00e0ff;
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  #admin-panel button {
+    padding: 0.8em 1.2em;
+    font-weight: bold;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    background-color: #004b9b;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  #admin-panel button:hover {
+    background-color: #00aaff;
+  }
+  #global-msg-input-container {
+    display: none;
+    margin-top: 10px;
+  }
+  #global-msg-input {
+    width: 100%;
+    padding: 0.6em 0.8em;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    box-shadow: inset 0 0 8px #007bff;
+    color: #00e0ff;
+    background-color: #001528;
+  }
 </style>
 </head>
 <body>
@@ -311,34 +368,69 @@
   </div>
 </div>
 
+<!-- NEW Admin Panel Modal -->
+<div id="admin-panel" role="dialog" aria-modal="true" aria-labelledby="admin-panel-title" aria-hidden="true">
+  <div class="admin-content">
+    <h2 id="admin-panel-title">Admin Panel</h2>
+    <button id="btn-update-servers" type="button">Update Servers</button>
+    <button id="btn-global-message" type="button">Send Global Message</button>
+    <button id="btn-reset-leaderboard" type="button">Reset Leaderboard</button>
+    <button id="btn-close-admin" type="button">Close Panel</button>
+
+    <div id="global-msg-input-container">
+      <input type="text" id="global-msg-input" placeholder="Enter global message..." aria-label="Global message input" />
+      <button id="btn-send-global-msg" type="button">Send</button>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script> <!-- Ensure socket.io client is loaded -->
+
 <script>
   (() => {
+    // Basic UI and Tabs
     const tabs = document.querySelectorAll(".tab-btn");
     const content = document.getElementById("content");
     const notifications = document.getElementById("notifications");
     const statsPanel = document.getElementById("stats-panel");
 
+    // Admin login modal elements
     const adminLoginModal = document.getElementById("admin-login");
     const adminLoginForm = document.getElementById("admin-login-form");
     const adminPasswordInput = document.getElementById("admin-password");
     const adminLoginCancel = document.getElementById("admin-login-cancel");
     const showPasswordCheckbox = document.getElementById("show-password-checkbox");
 
+    // New Admin panel modal elements
+    const adminPanel = document.getElementById("admin-panel");
+    const btnUpdateServers = document.getElementById("btn-update-servers");
+    const btnGlobalMessage = document.getElementById("btn-global-message");
+    const btnResetLeaderboard = document.getElementById("btn-reset-leaderboard");
+    const btnCloseAdmin = document.getElementById("btn-close-admin");
+    const globalMsgInputContainer = document.getElementById("global-msg-input-container");
+    const globalMsgInput = document.getElementById("global-msg-input");
+    const btnSendGlobalMsg = document.getElementById("btn-send-global-msg");
+
     const ADMIN_PASSWORD = "logolancer_admin1";
 
     let activeTab = "inbox";
     let adminLoggedIn = false;
 
-    // Blur background when admin modal is active
+    // Socket.IO client connection
+    const socket = io();
+
+    // Blur background when admin modals active
     function setBodyBlur(active) {
       if (active) {
         document.body.style.filter = "blur(4px)";
         document.body.style.pointerEvents = "none";
         adminLoginModal.setAttribute("aria-hidden", "false");
+        adminPanel.setAttribute("aria-hidden", "false");
       } else {
         document.body.style.filter = "none";
         document.body.style.pointerEvents = "auto";
         adminLoginModal.setAttribute("aria-hidden", "true");
+        adminPanel.setAttribute("aria-hidden", "true");
       }
     }
 
@@ -352,76 +444,57 @@
         newBtn.classList.add("active");
         newBtn.setAttribute("aria-current", "page");
       }
-
-      content.style.opacity = 0;
-      setTimeout(() => {
-        // Real content loading logic placeholder
-        content.innerHTML = `<p>Loading ${tab} content...</p>`;
-        content.style.opacity = 1;
-      }, 300);
-
       activeTab = tab;
+      loadTabContent(tab);
     }
 
-    tabs.forEach(btn => {
-      btn.addEventListener("click", () => {
-        switchTab(btn.dataset.tab);
+    // Tab content loader (simplified)
+    function loadTabContent(tab) {
+      switch(tab) {
+        case "inbox":
+          content.textContent = "Client requests will appear here.";
+          break;
+        case "store":
+          content.textContent = "Store your design assets and upgrades here.";
+          break;
+        case "projects":
+          content.textContent = "Manage your current design jobs here.";
+          break;
+        case "reviews":
+          content.textContent = "Client reviews and ratings go here.";
+          break;
+        case "settings":
+          content.textContent = "Adjust preferences and profile info.";
+          break;
+        default:
+          content.textContent = "Unknown tab.";
+      }
+    }
+
+    // Initialize tabs
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        switchTab(tab.getAttribute("data-tab"));
       });
     });
 
-    // Notifications
-    function createNotification(text, onClick) {
-      const notif = document.createElement("div");
-      notif.className = "notification";
-      notif.textContent = text;
+    loadTabContent(activeTab);
 
-      const closeBtn = document.createElement("button");
-      closeBtn.className = "close-btn";
-      closeBtn.setAttribute("aria-label", "Close notification");
-      closeBtn.innerHTML = "&times;";
-      closeBtn.onclick = (e) => {
-        e.stopPropagation();
-        notif.remove();
-      };
-      notif.appendChild(closeBtn);
-
-      notif.onclick = () => {
-        if (onClick) onClick();
-        notif.style.opacity = "0";
-        setTimeout(() => notif.remove(), 500);
-      };
-
-      notifications.appendChild(notif);
-
-      // Auto remove after 8 seconds
-      setTimeout(() => {
-        notif.style.opacity = "0";
-        setTimeout(() => notif.remove(), 500);
-      }, 8000);
-    }
-
-    // Admin panel open/close
-    function openAdminPanel() {
-      if (!adminLoggedIn) {
-        openAdminLogin();
-        return;
-      }
-      createNotification("Admin panel opened (placeholder)", () => {});
-    }
-
-    function openAdminLogin() {
+    // Admin login modal show/hide
+    function showAdminLogin() {
       adminLoginModal.classList.add("active");
       setBodyBlur(true);
-      adminPasswordInput.value = "";
       adminPasswordInput.focus();
     }
-
-    function closeAdminLogin() {
+    function hideAdminLogin() {
       adminLoginModal.classList.remove("active");
       setBodyBlur(false);
+      adminPasswordInput.value = "";
+      showPasswordCheckbox.checked = false;
+      adminPasswordInput.type = "password";
     }
 
-    adminLoginCancel.addEventListener("click", closeAdminLogin);
+    adminLoginCancel.addEventListener("click", hideAdminLogin);
 
     showPasswordCheckbox.addEventListener("change", () => {
       adminPasswordInput.type = showPasswordCheckbox.checked ? "text" : "password";
@@ -431,7 +504,7 @@
       e.preventDefault();
       if (adminPasswordInput.value === ADMIN_PASSWORD) {
         adminLoggedIn = true;
-        closeAdminLogin();
+        hideAdminLogin();
         openAdminPanel();
       } else {
         alert("Incorrect password.");
@@ -440,35 +513,108 @@
       }
     });
 
-    // Keyboard shortcut Ctrl+Shift+A to open admin
-    document.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.shiftKey && e.code === "KeyA") {
+    // Open admin panel
+    function openAdminPanel() {
+      if (!adminLoggedIn) {
+        showAdminLogin();
+        return;
+      }
+      adminPanel.classList.add("active");
+      setBodyBlur(true);
+      globalMsgInputContainer.style.display = "none";
+      globalMsgInput.value = "";
+      globalMsgInput.setAttribute("aria-hidden", "true");
+    }
+
+    // Close admin panel
+    function closeAdminPanel() {
+      adminPanel.classList.remove("active");
+      setBodyBlur(false);
+    }
+
+    btnCloseAdmin.addEventListener("click", closeAdminPanel);
+
+    // Admin panel button handlers
+    btnUpdateServers.addEventListener("click", () => {
+      sendAdminCommand("updateServers");
+      alert("Update Servers command sent.");
+    });
+
+    btnResetLeaderboard.addEventListener("click", () => {
+      sendAdminCommand("resetLeaderboard");
+      alert("Reset Leaderboard command sent.");
+    });
+
+    btnGlobalMessage.addEventListener("click", () => {
+      globalMsgInputContainer.style.display = "flex";
+      globalMsgInput.setAttribute("aria-hidden", "false");
+      globalMsgInput.focus();
+    });
+
+    btnSendGlobalMsg.addEventListener("click", () => {
+      const msg = globalMsgInput.value.trim();
+      if (msg.length === 0) {
+        alert("Please enter a message before sending.");
+        globalMsgInput.focus();
+        return;
+      }
+      sendAdminCommand("globalMessage", { message: msg });
+      alert(`Global message sent: "${msg}"`);
+      globalMsgInput.value = "";
+      globalMsgInputContainer.style.display = "none";
+      globalMsgInput.setAttribute("aria-hidden", "true");
+    });
+
+    // Keyboard shortcut: Ctrl + Shift + A to open admin login or panel
+    document.addEventListener("keydown", e => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
         e.preventDefault();
-        openAdminPanel();
+        if (adminLoggedIn) openAdminPanel();
+        else showAdminLogin();
       }
     });
 
-    // Remove focus outlines on mouse click but keep for keyboard
-    function handleFirstTab(e) {
-      if (e.key === "Tab") {
-        document.body.classList.add("user-is-tabbing");
-        window.removeEventListener("keydown", handleFirstTab);
-      }
+    // Send admin commands to server
+    function sendAdminCommand(command, payload = {}) {
+      socket.emit("adminCommand", { command, ...payload });
     }
-    window.addEventListener("keydown", handleFirstTab);
 
-    // Initialization
-    switchTab(activeTab);
+    // Listen to server events
+    socket.on("globalMessage", message => {
+      showNotification(`Global message: ${message}`);
+    });
 
-    // Expose globally if needed
-    window.LFS = {
-      switchTab,
-      createNotification,
-      openAdminPanel,
-    };
+    socket.on("leaderboardReset", () => {
+      showNotification("Leaderboard has been reset by Admin.");
+      // TODO: Add your leaderboard reset logic here
+    });
 
+    socket.on("serverUpdate", () => {
+      showNotification("Server has been updated.");
+      // TODO: Add your server update logic here (reload data, etc.)
+    });
+
+    // Notification UI helper
+    function showNotification(text) {
+      const notif = document.createElement("div");
+      notif.className = "notification";
+      notif.textContent = text;
+
+      const closeBtn = document.createElement("button");
+      closeBtn.className = "close-btn";
+      closeBtn.textContent = "×";
+      closeBtn.onclick = () => notif.remove();
+      notif.appendChild(closeBtn);
+
+      notifications.appendChild(notif);
+
+      // Auto remove after 7 seconds
+      setTimeout(() => {
+        notif.style.opacity = 0;
+        setTimeout(() => notif.remove(), 700);
+      }, 7000);
+    }
   })();
 </script>
-
 </body>
 </html>
