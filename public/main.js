@@ -172,7 +172,7 @@ document.addEventListener("keydown", e => {
 
 // --- Socket.IO Client Setup ---
 // Use relative URL for deployment
-const socket = io('https://54e8d8d0-27d5-47ba-a3b6-27b89ee9c980-00-1c8ney7773dr3.kirk.replit.dev');
+const socket = io('https://54e8d8d0-27d5-47ba-a3b6-27b89ee9c980-00-1c8ney7773dr3.kirk.replit.dev/');
 
 socket.on("globalMessage", message => {
   alert(`Global message: ${message}`);
