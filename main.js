@@ -1,32 +1,38 @@
 // === Tab Switching ===
-const tabs = document.querySelectorAll(".tab");
-const tabContent = document.getElementById("tab-content");
+const tabs = document.querySelectorAll(".tab-btn");
+const tabContent = document.getElementById("content");
+
+let activeTab = "inbox";
 
 tabs.forEach(tab => {
   tab.addEventListener("click", () => {
-    // Remove active class from all
-    tabs.forEach(t => t.classList.remove("active"));
-    tab.classList.add("active");
+    if (tab.getAttribute("data-tab") === activeTab) return;
 
-    // Load corresponding tab content
-    const selectedTab = tab.getAttribute("data-tab");
-    loadTabContent(selectedTab);
+    tabs.forEach(t => {
+      t.classList.remove("active");
+      t.removeAttribute("aria-current");
+    });
+    tab.classList.add("active");
+    tab.setAttribute("aria-current", "page");
+
+    activeTab = tab.getAttribute("data-tab");
+    loadTabContent(activeTab);
   });
 });
 
 function loadTabContent(tab) {
-  switch (tab) {
+  switch(tab) {
     case "inbox":
       tabContent.innerHTML = "<h2>Inbox</h2><div id='inbox-area'>Client requests will appear here.</div>";
+      break;
+    case "store":
+      tabContent.innerHTML = "<h2>Store</h2><p>Store your design assets and upgrades here.</p>";
       break;
     case "projects":
       tabContent.innerHTML = "<h2>Projects</h2><p>Manage your current design jobs here.</p>";
       break;
     case "reviews":
       tabContent.innerHTML = "<h2>Reviews</h2><p>Client reviews and ratings go here.</p>";
-      break;
-    case "admin":
-      tabContent.innerHTML = "<h2>Admin</h2><p>Access admin tools and debug panels.</p>";
       break;
     case "settings":
       tabContent.innerHTML = "<h2>Settings</h2><p>Adjust preferences and profile info.</p>";
@@ -37,60 +43,152 @@ function loadTabContent(tab) {
 }
 
 // Load default tab on start
-loadTabContent("inbox");
+loadTabContent(activeTab);
 
-// === Admin Popup Shortcut (Ctrl + Shift + A) ===
-document.addEventListener("keydown", (e) => {
-  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
-    e.preventDefault();
-    openAdminPopup();
+// === Admin Modal Logic ===
+
+const adminLoginModal = document.getElementById("admin-login");
+const adminPanelModal = document.getElementById("admin-panel");
+const adminPasswordInput = document.getElementById("admin-password");
+const adminLoginForm = document.getElementById("admin-login-form");
+const adminLoginCancel = document.getElementById("admin-login-cancel");
+const showPasswordCheckbox = document.getElementById("show-password-checkbox");
+
+const btnUpdateServers = document.getElementById("btn-update-servers");
+const btnGlobalMessage = document.getElementById("btn-global-message");
+const btnResetLeaderboard = document.getElementById("btn-reset-leaderboard");
+const btnCloseAdmin = document.getElementById("btn-close-admin");
+const globalMsgInputContainer = document.getElementById("global-msg-input-container");
+const globalMsgInput = document.getElementById("global-msg-input");
+const btnSendGlobalMsg = document.getElementById("btn-send-global-msg");
+
+const ADMIN_PASSWORD = "logolancer_admin1";
+let adminLoggedIn = false;
+
+function setBodyBlur(active) {
+  if(active) {
+    document.body.style.filter = "blur(4px)";
+    document.body.style.pointerEvents = "none";
+  } else {
+    document.body.style.filter = "none";
+    document.body.style.pointerEvents = "auto";
+  }
+}
+
+// Show admin login modal
+function showAdminLogin() {
+  adminLoginModal.classList.add("active");
+  setBodyBlur(true);
+  adminPasswordInput.focus();
+}
+
+// Hide admin login modal
+function hideAdminLogin() {
+  adminLoginModal.classList.remove("active");
+  setBodyBlur(false);
+  adminPasswordInput.value = "";
+  showPasswordCheckbox.checked = false;
+  adminPasswordInput.type = "password";
+}
+
+// Show admin panel modal
+function openAdminPanel() {
+  if(!adminLoggedIn) {
+    showAdminLogin();
+    return;
+  }
+  adminPanelModal.classList.add("active");
+  setBodyBlur(true);
+  globalMsgInputContainer.style.display = "none";
+  globalMsgInput.value = "";
+  globalMsgInput.setAttribute("aria-hidden", "true");
+}
+
+// Close admin panel modal
+function closeAdminPanel() {
+  adminPanelModal.classList.remove("active");
+  setBodyBlur(false);
+}
+
+adminLoginCancel.addEventListener("click", hideAdminLogin);
+
+showPasswordCheckbox.addEventListener("change", () => {
+  adminPasswordInput.type = showPasswordCheckbox.checked ? "text" : "password";
+});
+
+adminLoginForm.addEventListener("submit", e => {
+  e.preventDefault();
+  if(adminPasswordInput.value === ADMIN_PASSWORD) {
+    adminLoggedIn = true;
+    hideAdminLogin();
+    openAdminPanel();
+  } else {
+    alert("Incorrect password.");
+    adminPasswordInput.value = "";
+    adminPasswordInput.focus();
   }
 });
 
-function openAdminPopup() {
-  document.getElementById("admin-popup").classList.remove("hidden");
-}
+btnCloseAdmin.addEventListener("click", closeAdminPanel);
 
-document.getElementById("close-admin").addEventListener("click", () => {
-  document.getElementById("admin-popup").classList.add("hidden");
+btnUpdateServers.addEventListener("click", () => {
+  sendAdminCommand("updateServers");
+  alert("Update Servers command sent.");
 });
 
-// === Mouse vs Keyboard Focus Ring Handling ===
-document.body.classList.add("using-mouse");
-
-window.addEventListener("mousedown", () => {
-  document.body.classList.add("using-mouse");
+btnResetLeaderboard.addEventListener("click", () => {
+  sendAdminCommand("resetLeaderboard");
+  alert("Reset Leaderboard command sent.");
 });
 
-window.addEventListener("keydown", () => {
-  document.body.classList.remove("using-mouse");
+btnGlobalMessage.addEventListener("click", () => {
+  globalMsgInputContainer.style.display = "flex";
+  globalMsgInput.setAttribute("aria-hidden", "false");
+  globalMsgInput.focus();
 });
 
-// --- Socket.IO connection and admin commands ---
-// Make sure to include socket.io client script in your HTML for io() to work
-const socket = io('http://localhost:3000'); 
-
-// Listen for global message event broadcast from server
-socket.on('globalMessage', message => {
-  alert(`Global message: ${message}`); // TODO: Replace alert with nicer UI display
+btnSendGlobalMsg.addEventListener("click", () => {
+  const msg = globalMsgInput.value.trim();
+  if(msg.length === 0) {
+    alert("Please enter a message before sending.");
+    globalMsgInput.focus();
+    return;
+  }
+  sendAdminCommand("globalMessage", { message: msg });
+  alert(`Global message sent: "${msg}"`);
+  globalMsgInput.value = "";
+  globalMsgInputContainer.style.display = "none";
+  globalMsgInput.setAttribute("aria-hidden", "true");
 });
 
-// Listen for leaderboard reset or server update events as needed
-socket.on('leaderboardReset', () => {
-  alert('Leaderboard has been reset by Admin.');
+// Keyboard shortcut Ctrl+Shift+A to open admin modal or panel
+document.addEventListener("keydown", e => {
+  if(e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
+    e.preventDefault();
+    if(adminLoggedIn) openAdminPanel();
+    else showAdminLogin();
+  }
 });
 
-socket.on('updateServers', () => {
-  alert('Server has been updated.');
+// --- Socket.IO Client Setup ---
+// Use relative URL for deployment
+const socket = io();
+
+socket.on("globalMessage", message => {
+  alert(`Global message: ${message}`);
 });
 
-// For admin panel: emit commands to server
+socket.on("leaderboardReset", () => {
+  alert("Leaderboard has been reset by Admin.");
+  // Add reset logic here
+});
+
+socket.on("updateServers", () => {
+  alert("Server has been updated.");
+  // Add update logic here
+});
+
+// Send commands to server
 function sendAdminCommand(command, payload = {}) {
   socket.emit(`admin:${command}`, payload);
 }
-
-// Example usage (you need to wire these to buttons in your admin panel):
-// sendAdminCommand('updateServers');
-// sendAdminCommand('globalMessage', 'Hello players!');
-// sendAdminCommand('resetLeaderboard');
-

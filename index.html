@@ -368,7 +368,7 @@
   </div>
 </div>
 
-<!-- NEW Admin Panel Modal -->
+<!-- Admin Panel Modal -->
 <div id="admin-panel" role="dialog" aria-modal="true" aria-labelledby="admin-panel-title" aria-hidden="true">
   <div class="admin-content">
     <h2 id="admin-panel-title">Admin Panel</h2>
@@ -384,237 +384,226 @@
   </div>
 </div>
 
-<script src="/socket.io/socket.io.js"></script> <!-- Ensure socket.io client is loaded -->
+<script src="/socket.io/socket.io.js"></script>
 
 <script>
-  (() => {
-    // Basic UI and Tabs
-    const tabs = document.querySelectorAll(".tab-btn");
-    const content = document.getElementById("content");
-    const notifications = document.getElementById("notifications");
-    const statsPanel = document.getElementById("stats-panel");
+(() => {
+  // Basic UI and Tabs
+  const tabs = document.querySelectorAll(".tab-btn");
+  const content = document.getElementById("content");
+  const notifications = document.getElementById("notifications");
+  const statsPanel = document.getElementById("stats-panel");
 
-    // Admin login modal elements
-    const adminLoginModal = document.getElementById("admin-login");
-    const adminLoginForm = document.getElementById("admin-login-form");
-    const adminPasswordInput = document.getElementById("admin-password");
-    const adminLoginCancel = document.getElementById("admin-login-cancel");
-    const showPasswordCheckbox = document.getElementById("show-password-checkbox");
+  // Admin login modal elements
+  const adminLoginModal = document.getElementById("admin-login");
+  const adminLoginForm = document.getElementById("admin-login-form");
+  const adminPasswordInput = document.getElementById("admin-password");
+  const showPasswordCheckbox = document.getElementById("show-password-checkbox");
+  const adminLoginCancel = document.getElementById("admin-login-cancel");
 
-    // New Admin panel modal elements
-    const adminPanel = document.getElementById("admin-panel");
-    const btnUpdateServers = document.getElementById("btn-update-servers");
-    const btnGlobalMessage = document.getElementById("btn-global-message");
-    const btnResetLeaderboard = document.getElementById("btn-reset-leaderboard");
-    const btnCloseAdmin = document.getElementById("btn-close-admin");
-    const globalMsgInputContainer = document.getElementById("global-msg-input-container");
-    const globalMsgInput = document.getElementById("global-msg-input");
-    const btnSendGlobalMsg = document.getElementById("btn-send-global-msg");
+  // Admin panel modal elements
+  const adminPanel = document.getElementById("admin-panel");
+  const btnUpdateServers = document.getElementById("btn-update-servers");
+  const btnGlobalMessage = document.getElementById("btn-global-message");
+  const btnResetLeaderboard = document.getElementById("btn-reset-leaderboard");
+  const btnCloseAdmin = document.getElementById("btn-close-admin");
+  const globalMsgInputContainer = document.getElementById("global-msg-input-container");
+  const globalMsgInput = document.getElementById("global-msg-input");
+  const btnSendGlobalMsg = document.getElementById("btn-send-global-msg");
 
-    const ADMIN_PASSWORD = "logolancer_admin1";
+  let loggedIn = false;
 
-    let activeTab = "inbox";
-    let adminLoggedIn = false;
+  // Initialize socket.io
+  const socket = io();
 
-    // Socket.IO client connection
-    const socket = io();
-
-    // Blur background when admin modals active
-    function setBodyBlur(active) {
-      if (active) {
-        document.body.style.filter = "blur(4px)";
-        document.body.style.pointerEvents = "none";
-        adminLoginModal.setAttribute("aria-hidden", "false");
-        adminPanel.setAttribute("aria-hidden", "false");
-      } else {
-        document.body.style.filter = "none";
-        document.body.style.pointerEvents = "auto";
-        adminLoginModal.setAttribute("aria-hidden", "true");
-        adminPanel.setAttribute("aria-hidden", "true");
-      }
+  // Tabs switch handler
+  function loadTabContent(tab) {
+    switch (tab) {
+      case "inbox":
+        content.innerHTML = "<h2>Inbox</h2><div id='inbox-area'>Client requests will appear here.</div>";
+        break;
+      case "store":
+        content.innerHTML = "<h2>Store</h2><p>Purchase upgrades and assets here.</p>";
+        break;
+      case "projects":
+        content.innerHTML = "<h2>Projects</h2><p>Manage your current design jobs here.</p>";
+        break;
+      case "reviews":
+        content.innerHTML = "<h2>Reviews</h2><p>Client reviews and ratings go here.</p>";
+        break;
+      case "settings":
+        content.innerHTML = "<h2>Settings</h2><p>Adjust preferences and profile info.</p>";
+        break;
+      default:
+        content.innerHTML = "<p>Unknown tab.</p>";
     }
+  }
 
-    // Tab switch with smooth fade
-    function switchTab(tab) {
-      if (tab === activeTab) return;
-
-      document.querySelector("button.tab-btn.active")?.classList.remove("active");
-      const newBtn = document.querySelector(`button.tab-btn[data-tab="${tab}"]`);
-      if (newBtn) {
-        newBtn.classList.add("active");
-        newBtn.setAttribute("aria-current", "page");
-      }
-      activeTab = tab;
-      loadTabContent(tab);
-    }
-
-    // Tab content loader (simplified)
-    function loadTabContent(tab) {
-      switch(tab) {
-        case "inbox":
-          content.textContent = "Client requests will appear here.";
-          break;
-        case "store":
-          content.textContent = "Store your design assets and upgrades here.";
-          break;
-        case "projects":
-          content.textContent = "Manage your current design jobs here.";
-          break;
-        case "reviews":
-          content.textContent = "Client reviews and ratings go here.";
-          break;
-        case "settings":
-          content.textContent = "Adjust preferences and profile info.";
-          break;
-        default:
-          content.textContent = "Unknown tab.";
-      }
-    }
-
-    // Initialize tabs
-    tabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        switchTab(tab.getAttribute("data-tab"));
-      });
+  function setActiveTab(tabName) {
+    tabs.forEach(t => {
+      const isActive = t.getAttribute("data-tab") === tabName;
+      t.classList.toggle("active", isActive);
+      t.setAttribute("aria-current", isActive ? "page" : "false");
     });
+    loadTabContent(tabName);
+  }
 
-    loadTabContent(activeTab);
-
-    // Admin login modal show/hide
-    function showAdminLogin() {
-      adminLoginModal.classList.add("active");
-      setBodyBlur(true);
-      adminPasswordInput.focus();
-    }
-    function hideAdminLogin() {
-      adminLoginModal.classList.remove("active");
-      setBodyBlur(false);
-      adminPasswordInput.value = "";
-      showPasswordCheckbox.checked = false;
-      adminPasswordInput.type = "password";
-    }
-
-    adminLoginCancel.addEventListener("click", hideAdminLogin);
-
-    showPasswordCheckbox.addEventListener("change", () => {
-      adminPasswordInput.type = showPasswordCheckbox.checked ? "text" : "password";
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      const selectedTab = tab.getAttribute("data-tab");
+      setActiveTab(selectedTab);
     });
+  });
 
-    adminLoginForm.addEventListener("submit", e => {
+  // Default load
+  setActiveTab("inbox");
+
+  // Admin shortcut Ctrl+Shift+A to open login or panel
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
       e.preventDefault();
-      if (adminPasswordInput.value === ADMIN_PASSWORD) {
-        adminLoggedIn = true;
-        hideAdminLogin();
+      if (loggedIn) {
         openAdminPanel();
       } else {
-        alert("Incorrect password.");
-        adminPasswordInput.value = "";
-        adminPasswordInput.focus();
+        openAdminLogin();
       }
-    });
+    }
+  });
 
-    // Open admin panel
-    function openAdminPanel() {
-      if (!adminLoggedIn) {
-        showAdminLogin();
-        return;
-      }
-      adminPanel.classList.add("active");
-      setBodyBlur(true);
-      globalMsgInputContainer.style.display = "none";
+  // Show/hide admin login modal
+  function openAdminLogin() {
+    adminLoginModal.classList.add("active");
+    adminPasswordInput.focus();
+    adminLoginModal.setAttribute("aria-hidden", "false");
+  }
+  function closeAdminLogin() {
+    adminLoginModal.classList.remove("active");
+    adminLoginModal.setAttribute("aria-hidden", "true");
+    adminPasswordInput.value = "";
+  }
+
+  // Show/hide admin panel modal
+  function openAdminPanel() {
+    adminPanel.classList.add("active");
+    adminPanel.setAttribute("aria-hidden", "false");
+    globalMsgInputContainer.style.display = "none";
+    globalMsgInput.value = "";
+  }
+  function closeAdminPanel() {
+    adminPanel.classList.remove("active");
+    adminPanel.setAttribute("aria-hidden", "true");
+  }
+
+  adminLoginCancel.addEventListener("click", e => {
+    e.preventDefault();
+    closeAdminLogin();
+  });
+
+  // Show/hide password checkbox handler
+  showPasswordCheckbox.addEventListener("change", () => {
+    adminPasswordInput.type = showPasswordCheckbox.checked ? "text" : "password";
+  });
+
+  // Admin login form submit handler
+  adminLoginForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const pwd = adminPasswordInput.value;
+    // For demo, hardcoded password check, replace with server validation in production
+    if (pwd === "admin123") {
+      loggedIn = true;
+      closeAdminLogin();
+      openAdminPanel();
+      showNotification("Admin login successful.", "success");
+    } else {
+      alert("Incorrect password.");
+      adminPasswordInput.focus();
+    }
+  });
+
+  // Admin panel buttons
+  btnCloseAdmin.addEventListener("click", () => {
+    closeAdminPanel();
+  });
+
+  btnUpdateServers.addEventListener("click", () => {
+    sendAdminCommand('updateServers');
+    showNotification("Server update command sent.", "info");
+  });
+
+  btnGlobalMessage.addEventListener("click", () => {
+    globalMsgInputContainer.style.display = globalMsgInputContainer.style.display === "none" ? "block" : "none";
+    globalMsgInput.focus();
+  });
+
+  btnSendGlobalMsg.addEventListener("click", () => {
+    const msg = globalMsgInput.value.trim();
+    if (msg.length > 0) {
+      sendAdminCommand('globalMessage', msg);
+      showNotification(`Global message sent: ${msg}`, "info");
       globalMsgInput.value = "";
-      globalMsgInput.setAttribute("aria-hidden", "true");
-    }
-
-    // Close admin panel
-    function closeAdminPanel() {
-      adminPanel.classList.remove("active");
-      setBodyBlur(false);
-    }
-
-    btnCloseAdmin.addEventListener("click", closeAdminPanel);
-
-    // Admin panel button handlers
-    btnUpdateServers.addEventListener("click", () => {
-      sendAdminCommand("updateServers");
-      alert("Update Servers command sent.");
-    });
-
-    btnResetLeaderboard.addEventListener("click", () => {
-      sendAdminCommand("resetLeaderboard");
-      alert("Reset Leaderboard command sent.");
-    });
-
-    btnGlobalMessage.addEventListener("click", () => {
-      globalMsgInputContainer.style.display = "flex";
-      globalMsgInput.setAttribute("aria-hidden", "false");
-      globalMsgInput.focus();
-    });
-
-    btnSendGlobalMsg.addEventListener("click", () => {
-      const msg = globalMsgInput.value.trim();
-      if (msg.length === 0) {
-        alert("Please enter a message before sending.");
-        globalMsgInput.focus();
-        return;
-      }
-      sendAdminCommand("globalMessage", { message: msg });
-      alert(`Global message sent: "${msg}"`);
-      globalMsgInput.value = "";
       globalMsgInputContainer.style.display = "none";
-      globalMsgInput.setAttribute("aria-hidden", "true");
-    });
-
-    // Keyboard shortcut: Ctrl + Shift + A to open admin login or panel
-    document.addEventListener("keydown", e => {
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
-        e.preventDefault();
-        if (adminLoggedIn) openAdminPanel();
-        else showAdminLogin();
-      }
-    });
-
-    // Send admin commands to server
-    function sendAdminCommand(command, payload = {}) {
-      socket.emit("adminCommand", { command, ...payload });
     }
+  });
 
-    // Listen to server events
-    socket.on("globalMessage", message => {
-      showNotification(`Global message: ${message}`);
-    });
-
-    socket.on("leaderboardReset", () => {
-      showNotification("Leaderboard has been reset by Admin.");
-      // TODO: Add your leaderboard reset logic here
-    });
-
-    socket.on("serverUpdate", () => {
-      showNotification("Server has been updated.");
-      // TODO: Add your server update logic here (reload data, etc.)
-    });
-
-    // Notification UI helper
-    function showNotification(text) {
-      const notif = document.createElement("div");
-      notif.className = "notification";
-      notif.textContent = text;
-
-      const closeBtn = document.createElement("button");
-      closeBtn.className = "close-btn";
-      closeBtn.textContent = "×";
-      closeBtn.onclick = () => notif.remove();
-      notif.appendChild(closeBtn);
-
-      notifications.appendChild(notif);
-
-      // Auto remove after 7 seconds
-      setTimeout(() => {
-        notif.style.opacity = 0;
-        setTimeout(() => notif.remove(), 700);
-      }, 7000);
+  btnResetLeaderboard.addEventListener("click", () => {
+    if (confirm("Are you sure you want to reset the leaderboard?")) {
+      sendAdminCommand('resetLeaderboard');
+      showNotification("Leaderboard reset command sent.", "warning");
     }
-  })();
+  });
+
+  // Socket.io listeners for server events
+  socket.on('globalMessage', message => {
+    alert(`Global message: ${message}`);
+  });
+
+  socket.on('leaderboardReset', () => {
+    alert('Leaderboard has been reset by Admin.');
+  });
+
+  socket.on('updateServers', () => {
+    alert('Server has been updated.');
+  });
+
+  // Emit admin commands to server
+  function sendAdminCommand(command, payload = {}) {
+    socket.emit(`admin:${command}`, payload);
+  }
+
+  // Notification system (simplified)
+  function showNotification(text, type = "info") {
+    const notif = document.createElement("div");
+    notif.className = "notification";
+    notif.textContent = text;
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "close-btn";
+    closeBtn.setAttribute("aria-label", "Close notification");
+    closeBtn.innerHTML = "&times;";
+    closeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      notif.style.opacity = 0;
+      setTimeout(() => notif.remove(), 700);
+    });
+
+    notif.appendChild(closeBtn);
+    notifications.appendChild(notif);
+
+    setTimeout(() => {
+      notif.style.opacity = 0;
+      setTimeout(() => notif.remove(), 700);
+    }, 8000);
+  }
+
+  // Mouse vs keyboard focus ring toggling
+  document.body.classList.add("using-mouse");
+  window.addEventListener("mousedown", () => {
+    document.body.classList.add("using-mouse");
+  });
+  window.addEventListener("keydown", () => {
+    document.body.classList.remove("using-mouse");
+  });
+})();
 </script>
 </body>
 </html>
