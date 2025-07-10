@@ -172,7 +172,7 @@ document.addEventListener("keydown", e => {
 
 // --- Socket.IO Client Setup ---
 // Use relative URL for deployment
-const socket = io('http://localhost:4000);
+const socket = io('http://localhost:4000');
 
 socket.on("globalMessage", message => {
   alert(`Global message: ${message}`);
