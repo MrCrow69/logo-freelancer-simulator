@@ -67,6 +67,24 @@ const wrongPasswordBox = document.getElementById("wrong-password-box");
 
 const ADMIN_PASSWORD = "1234";
 let adminLoggedIn = false;
+function showAdminLogin() {
+  adminLoginModal.classList.add("active");
+  setBodyBlur(true);
+  adminPasswordInput.focus();
+}
+
+function openAdminPanel() {
+  if (!adminLoggedIn) {
+    showAdminLogin();
+    return;
+  }
+  adminPanelModal.classList.add("active");
+  setBodyBlur(true);
+  globalMsgInputContainer.style.display = "none";
+  globalMsgInput.value = "";
+  globalMsgInput.setAttribute("aria-hidden", "true");
+}
+
 
 // Blur control applies a class on body to blur only page content
 function setBodyBlur(active) {
