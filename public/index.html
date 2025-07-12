@@ -1,666 +1,799 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Logo Freelancer Simulator</title>
-  <style>
-    /* Reset and base */
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #091426, #001f5b);
-      color: #dce8ff;
-      overflow-x: hidden;
-      user-select: none;
-    }
-    header {
-      background: linear-gradient(90deg, #3a6efc, #0a0f1f);
-      padding: 0.8em 1.2em;
-      display: flex;
-      justify-content: center;
-      gap: 1.5em;
-      align-items: center;
-    }
-    header h1.logo {
-      color: #fff;
-      font-weight: 900;
-      font-size: 1.7rem;
-      letter-spacing: 0.1em;
-      margin-right: 2em;
-      user-select: text;
-    }
-    nav {
-      display: flex;
-      gap: 1em;
-      align-items: center;
-    }
-    button.tab-btn {
-      background: none;
-      border: none;
-      color: #aac8ff;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      padding: 0.6em 1.2em;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-      transition: 
-        color 0.3s ease, 
-        background-color 0.3s ease, 
-        box-shadow 0.3s ease,
-        transform 0.15s ease;
-      user-select: none;
-    }
-    button.tab-btn:focus {
-      outline: none;
-      box-shadow: none;
-    }
-    button.tab-btn:hover:not(.active) {
-      color: #3a6efc;
-    }
-    button.tab-btn.active {
-      color: #3a6efc;
-      background: rgba(58, 110, 252, 0.15);
-      box-shadow: 0 0 15px #3a6efccc;
-      transform: translateY(-2px);
-    }
-    main#content {
-      padding: 1.5em 2em;
-      min-height: 420px;
-      font-size: 1rem;
-      font-weight: 400;
-      background: rgba(5, 10, 25, 0.5);
-      margin: 1em 2em;
-      border-radius: 16px;
-      box-shadow: 0 0 30px #004b9b66 inset;
-      user-select: text;
-      transition: opacity 0.4s ease;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Logo Freelancer Simulator</title>
+<style>
+  /* Reset & base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0f1e;
+    color: #cce6ff;
+    --theme-color: #3a6efc;
+    user-select: none;
+    transition: background-color 0.4s ease;
+  }
 
-    /* Icons for tabs */
-    .tab-icon {
-      width: 18px;
-      height: 18px;
-      fill: #aac8ff;
-      transition: fill 0.3s ease;
-    }
-    button.tab-btn.active .tab-icon {
-      fill: #3a6efc;
-    }
+  /* Blur active when modal open */
+  body.blur-active > #main-content {
+    filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+  }
 
-    /* Stats panel fixed bottom-left */
-    #stats-panel {
-      position: fixed;
-      bottom: 15px;
-      left: 15px;
-      background: rgba(58, 110, 252, 0.15);
-      color: #3a6efc;
-      padding: 1em 1.3em;
-      border-radius: 20px;
-      font-weight: 700;
-      font-size: 0.95rem;
-      box-shadow: 0 0 15px #3a6efccc;
-      user-select: none;
-      width: 220px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+  /* Header with tabs */
+  header {
+    background: linear-gradient(90deg, var(--theme-color), #1f4ed9);
+    padding: 1rem 0;
+    text-align: center;
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: white;
+    user-select: none;
+  }
 
-    /* Notifications container */
-    #notifications {
-      position: fixed;
-      bottom: 1em;
-      right: 1em;
-      max-width: 320px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5em;
-      z-index: 2000; /* Above blur and modals */
-    }
-    /* Notification boxes */
-    .notification {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      padding: 0.8em 1.2em;
-      color: #e0f7ff;
-      box-shadow: 0 0 15px 2px rgba(255, 255, 255, 0.3);
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      transition: opacity 0.7s ease;
-      user-select: none;
-      position: relative;
-    }
-    .notification:hover {
-      box-shadow: 0 0 22px 4px #3a6efccc;
-      color: #3a6efc;
-    }
-    .notification .close-btn {
-      position: absolute;
-      top: 8px;
-      right: 12px;
-      background: transparent;
-      border: none;
-      color: #aaddffcc;
-      font-weight: 700;
-      font-size: 1.1rem;
-      cursor: pointer;
-      user-select: none;
-    }
-    .notification .close-btn:hover {
-      color: #3a6efc;
-    }
+  /* Tabs container */
+  nav {
+    display: flex;
+    justify-content: center;
+    background-color: #13203d;
+    border-bottom: 2px solid var(--theme-color);
+  }
+  .tab-btn {
+    background: transparent;
+    border: none;
+    color: #88bbffcc;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    cursor: pointer;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+    border-bottom: 3px solid transparent;
+  }
+  .tab-btn:hover {
+    color: var(--theme-color);
+  }
+  .tab-btn.active {
+    color: white;
+    border-bottom: 3px solid var(--theme-color);
+  }
+  .tab-btn:focus {
+    outline: none;
+    box-shadow: 0 0 8px var(--theme-color);
+  }
 
-    /* Admin login modal */
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(10, 15, 30, 0.85);
-      backdrop-filter: blur(12px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1200;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-    .modal.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .modal-content {
-      background: #13203d;
-      padding: 2.5em 3em;
-      border-radius: 16px;
-      width: 420px;
-      box-shadow: 0 0 30px #3a6efcbb;
-      color: #cceeff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      position: relative;
-    }
-    .modal-content h2 {
-      margin-top: 0;
-      font-weight: 900;
-      font-size: 1.7rem;
-      color: #3a6efc;
-      text-align: center;
-    }
-    .modal-content form {
-      margin-top: 1.5em;
-    }
-    .modal-content input[type="password"] {
-      width: 100%;
-      padding: 0.7em 1em;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 12px;
-      background-color: #0f1a2e;
-      color: #dce8ff;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      font-family: monospace;
-      box-shadow: inset 0 0 6px #004b9b;
-      transition: box-shadow 0.25s ease;
-    }
-    .modal-content input[type="password"]:focus {
-      outline: none;
-      box-shadow: 0 0 14px #3a6efc;
-    }
-    .checkbox-wrapper {
-      margin-top: 1em;
-      display: flex;
-      align-items: center;
-      gap: 0.6em;
-      font-weight: 600;
-      color: #88ccffcc;
-      user-select: none;
-    }
-    .checkbox-wrapper input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: #3a6efc;
-      cursor: pointer;
-    }
-    .modal-buttons {
-      margin-top: 1.8em;
-      display: flex;
-      justify-content: space-between;
-    }
-    .btn {
-      background-color: #3a6efc;
-      border: none;
-      color: white;
-      padding: 0.8em 1.8em;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 1.1rem;
-      transition: background-color 0.3s ease;
-    }
-    .btn:hover {
-      background-color: #1f4ed9;
-    }
-    .btn-cancel {
-      background-color: #222;
-    }
-    .btn-cancel:hover {
-      background-color: #444;
-    }
+  /* Main content area */
+  #content {
+    padding: 1.5rem 2rem;
+    min-height: 450px;
+  }
 
-    /* NEW Admin Panel Modal (after login) */
-    #admin-panel {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(10, 15, 30, 0.85);
-      backdrop-filter: blur(10px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1300;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-    #admin-panel.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    #admin-panel .admin-content {
-      background: #0a1430;
-      padding: 2rem 3rem;
-      border-radius: 15px;
-      box-shadow: 0 0 25px #3a6efccc;
-      color: #3a6efc;
-      width: 350px;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    #admin-panel button {
-      padding: 0.8em 1.2em;
-      font-weight: bold;
-      font-size: 1rem;
-      border: none;
-      border-radius: 10px;
-      background-color: #1f4ed9;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    #admin-panel button:hover {
-      background-color: #3a6efc;
-    }
-    #global-msg-input-container {
-      display: none;
-      margin-top: 10px;
-    }
-    #global-msg-input {
-      width: 100%;
-      padding: 0.6em 0.8em;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: none;
-      box-shadow: inset 0 0 8px #3a6efc;
-      color: #3a6efc;
-      background-color: #001528;
-    }
+  /* Client requests, store items, projects, reviews styles */
+  #inbox-area div.client-request,
+  #store-area div,
+  #projects-area div,
+  #reviews-area div {
+    background: #13203d;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #1f4386;
+  }
 
-    /* Shake animation for wrong password */
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-8px); }
-      40%, 80% { transform: translateX(8px); }
-    }
+  button {
+    background-color: var(--theme-color);
+    border: none;
+    color: white;
+    font-weight: 700;
+    padding: 0.5em 1.2em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 0.5rem;
+  }
+  button:hover:not(:disabled) {
+    background-color: #1f4ed9;
+  }
+  button:disabled {
+    background-color: #444;
+    cursor: default;
+  }
 
-    .wrong-password {
-      animation: shake 0.5s ease;
-      color: red !important;
-      transition: color 0.5s ease 0.5s;
-    }
+  /* === Admin Login Modal === */
+  #admin-login, #admin-panel {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10, 15, 30, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  #admin-login.active, #admin-panel.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #admin-login .modal-content, #admin-panel .admin-content {
+    background: #13203d;
+    padding: 2.5em 3em;
+    border-radius: 12px;
+    width: 400px;
+    box-shadow: 0 0 30px var(--theme-color);
+    color: #cce6ff;
+    font-family: "Segoe UI", sans-serif;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2em;
+  }
+  #admin-login h2, #admin-panel h2 {
+    margin: 0;
+    font-weight: 900;
+    font-size: 1.8em;
+    color: var(--theme-color);
+    text-align: center;
+  }
+  #admin-login input[type="password"] {
+    font-family: monospace;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    font-size: 1.1em;
+    padding: 0.7em 1em;
+    border-radius: 8px;
+    border: none;
+    background-color: #0f1a2e;
+    color: #cce6ff;
+    box-shadow: inset 0 0 6px #1f4386;
+    transition: box-shadow 0.25s ease;
+  }
+  #admin-login input[type="password"]:focus {
+    outline: none;
+    box-shadow: 0 0 12px var(--theme-color);
+  }
+  /* Themed checkbox */
+  #admin-login label.checkbox-wrapper {
+    color: #88bbffcc;
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font-weight: 600;
+    user-select: none;
+    cursor: pointer;
+  }
+  #admin-login input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--theme-color);
+  }
+  #admin-login .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  #admin-login .btn {
+    background-color: var(--theme-color);
+    border: none;
+    color: white;
+    padding: 0.7em 2em;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+  }
+  #admin-login .btn:hover {
+    background-color: #1f4ed9;
+  }
+  #admin-login .btn.btn-cancel {
+    background-color: #222;
+  }
+  #admin-login .btn.btn-cancel:hover {
+    background-color: #444;
+  }
+  /* Admin Panel buttons */
+  #admin-panel button {
+    background-color: var(--theme-color);
+    border: none;
+    color: white;
+    padding: 0.7em 1.2em;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+  }
+  #admin-panel button:hover {
+    background-color: #1f4ed9;
+  }
+  #global-msg-input-container {
+    display: none;
+    margin-top: 0.8em;
+    width: 100%;
+  }
+  #global-msg-input {
+    width: 100%;
+    padding: 0.6em 0.8em;
+    font-size: 1em;
+    border-radius: 6px;
+    border: none;
+    box-shadow: inset 0 0 8px #1f4386;
+    background-color: #0f1a2e;
+    color: #cce6ff;
+    font-family: "Segoe UI", sans-serif;
+    font-weight: 600;
+  }
+  /* Shake Animation for Wrong Password */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
+  .wrong-password {
+    animation: shake 0.5s ease;
+    color: red !important;
+    transition: color 0.5s ease 0.5s;
+  }
+  /* Top Wrong Password Box */
+  #wrong-password-box {
+    position: fixed;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--theme-color);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    box-shadow: 0 0 15px var(--theme-color);
+    user-select: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: top 0.4s ease, opacity 0.4s ease;
+    z-index: 2100;
+  }
+  #wrong-password-box.active {
+    top: 20px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Settings area */
+  #settings-area {
+    font-size: 1.1rem;
+  }
+  #settings-area label {
+    cursor: pointer;
+    user-select: none;
+  }
+  #settings-area input[type="checkbox"] {
+    margin-right: 0.6rem;
+    accent-color: var(--theme-color);
+    cursor: pointer;
+    transform: scale(1.2);
+    vertical-align: middle;
+  }
+  #settings-area input[type="color"] {
+    margin-left: 0.5rem;
+    cursor: pointer;
+    border: none;
+    width: 50px;
+    height: 32px;
+    vertical-align: middle;
+    background: none;
+  }
+</style>
+</head>
+<body>
+<header>Logo Freelancer Simulator</header>
 
-    /* Wrong password box sliding from top */
-    #wrong-password-box {
-      position: fixed;
-      top: -40px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #3a6efc;
-      color: white;
-      padding: 8px 18px;
-      border-radius: 10px;
-      font-weight: 700;
-      box-shadow: 0 0 15px #3a6efccc;
-      user-select: none;
-      opacity: 0;
-      pointer-events: none;
-      transition: top 0.4s ease, opacity 0.4s ease;
-      z-index: 2100;
-    }
+<nav role="tablist" aria-label="Main Tabs">
+  <button class="tab-btn active" data-tab="inbox" aria-current="page" role="tab" tabindex="0">Inbox</button>
+  <button class="tab-btn" data-tab="store" role="tab" tabindex="-1">Store</button>
+  <button class="tab-btn" data-tab="projects" role="tab" tabindex="-1">Projects</button>
+  <button class="tab-btn" data-tab="reviews" role="tab" tabindex="-1">Reviews</button>
+  <button class="tab-btn" data-tab="settings" role="tab" tabindex="-1">Settings</button>
+</nav>
 
-    #wrong-password-box.active {
-      top: 20px;
-      opacity: 1;
-      pointer-events: auto;
-    }
-  </style>
-  </head>
-  <body>
+<main id="main-content" tabindex="-1">
+  <section id="content" role="tabpanel" aria-live="polite" aria-atomic="true">
+    <!-- Dynamic tab content loads here -->
+  </section>
+</main>
 
-  <header>
-    <h1 class="logo" aria-label="Logo Freelancer Simulator">LFS</h1>
-    <nav>
-      <button class="tab-btn active" data-tab="inbox" aria-current="page" aria-label="Inbox">
-        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6h-4l-2-2H10L8 6H4v12h16z"/></svg> Inbox
-      </button>
-      <button class="tab-btn" data-tab="store" aria-label="Store">
-        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18v11H3z"/></svg> Store
-      </button>
-      <button class="tab-btn" data-tab="projects" aria-label="Projects">
-        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7v7c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7z"/></svg> Projects
-      </button>
-      <button class="tab-btn" data-tab="reviews" aria-label="Reviews">
-        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27L18.18 21 16.54 13.97 22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/></svg> Reviews
-      </button>
-      <button class="tab-btn" data-tab="settings" aria-label="Settings">
-        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 0 0 0 8 4 4 0 0 0 0-8zm0 10a8 8 0 0 1-6.32-3.16l1.42-1.42A6 6 0 0 0 12 16a6 6 0 0 0 4.9-2.58l1.42 1.42A8 8 0 0 1 12 18z"/></svg> Settings
-      </button>
-    </nav>
-  </header>
-
-  <main id="content" role="main" tabindex="0" aria-live="polite" aria-atomic="true">
-    <!-- Loaded tab content here -->
-  </main>
-
-  <div id="stats-panel" aria-label="Player statistics">
-    Level: 5 | Clients: 12 | Projects: 3
-  </div>
-
-  <!-- Notifications container -->
-  <div id="notifications" aria-live="assertive" aria-atomic="true" role="region">
-    <!-- Notifications will appear here dynamically -->
-  </div>
-
-  <!-- Admin login modal -->
-  <div class="modal" id="admin-login" role="dialog" aria-modal="true" aria-labelledby="admin-login-title" tabindex="-1">
-    <div class="modal-content">
-      <h2 id="admin-login-title">Admin Login</h2>
-      <form id="admin-login-form" autocomplete="off" novalidate>
-        <input
-          type="password"
-          id="admin-password"
-          aria-describedby="password-help"
-          aria-invalid="false"
-          placeholder="Enter Admin Password"
-          autocomplete="new-password"
-          required
-        />
-        <div class="checkbox-wrapper">
-          <input type="checkbox" id="show-password-checkbox" />
-          <label for="show-password-checkbox">Show Password</label>
-        </div>
-        <div class="modal-buttons">
-          <button type="submit" class="btn">Login</button>
-          <button type="button" id="admin-login-cancel" class="btn btn-cancel">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-<!-- Admin login modal -->
-<div id="admin-login" class="modal" role="dialog" aria-modal="true" aria-labelledby="admin-login-title" tabindex="-1">
+<!-- Admin Login Modal -->
+<div id="admin-login" role="dialog" aria-modal="true" aria-labelledby="admin-login-title" aria-hidden="true">
   <div class="modal-content">
     <h2 id="admin-login-title">Admin Login</h2>
-    <form id="admin-login-form" autocomplete="off" novalidate>
+    <form id="admin-login-form">
       <input
-        type="password"
         id="admin-password"
-        aria-describedby="password-help"
-        aria-invalid="false"
-        placeholder="Enter Admin Password"
-        autocomplete="new-password"
+        type="password"
+        aria-label="Admin password"
+        placeholder="Enter password"
+        autocomplete="off"
         required
       />
-      <div class="checkbox-wrapper">
+      <label class="checkbox-wrapper" id="show-password-checkbox-wrapper" tabindex="0" role="checkbox" aria-checked="false">
         <input type="checkbox" id="show-password-checkbox" />
-        <label for="show-password-checkbox">Show Password</label>
-      </div>
+        Show password
+      </label>
       <div class="modal-buttons">
         <button type="submit" class="btn">Login</button>
-        <button type="button" id="admin-login-cancel" class="btn btn-cancel">Cancel</button>
+        <button type="button" class="btn btn-cancel" id="admin-login-cancel">Cancel</button>
       </div>
     </form>
   </div>
 </div>
 
+<!-- Admin Panel Modal -->
+<div id="admin-panel" role="dialog" aria-modal="true" aria-labelledby="admin-panel-title" aria-hidden="true">
+  <div class="admin-content">
+    <h2 id="admin-panel-title">Admin Panel</h2>
+    <button id="btn-update-servers">Update Servers</button>
+    <button id="btn-global-message">Send Global Message</button>
+    <button id="btn-reset-leaderboard">Reset Leaderboard</button>
+    <button id="btn-close-admin">Logout</button>
+    <div id="global-msg-input-container">
+      <input id="global-msg-input" type="text" aria-label="Global message input" />
+      <button id="btn-send-global-msg">Send</button>
+    </div>
+  </div>
+</div>
 
-  <!-- Wrong password notification -->
-  <div id="wrong-password-box" role="alert" aria-live="assertive">Wrong password</div>
+<div id="wrong-password-box" role="alert" aria-live="assertive"></div>
 
-  <script>
-    // === Tab Switching ===
-    const tabs = document.querySelectorAll(".tab-btn");
-    const tabContent = document.getElementById("content");
+<script>
+  // --- Tab Switching ---
+  const tabs = document.querySelectorAll(".tab-btn");
+  const tabContent = document.getElementById("content");
 
-    let activeTab = "inbox";
+  let activeTab = "inbox";
 
-    tabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        if (tab.getAttribute("data-tab") === activeTab) return;
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      if (tab.getAttribute("data-tab") === activeTab) return;
 
-        tabs.forEach(t => {
-          t.classList.remove("active");
-          t.removeAttribute("aria-current");
-        });
-        tab.classList.add("active");
-        tab.setAttribute("aria-current", "page");
-
-        activeTab = tab.getAttribute("data-tab");
-        loadTabContent(activeTab);
+      tabs.forEach(t => {
+        t.classList.remove("active");
+        t.removeAttribute("aria-current");
+        t.setAttribute("tabindex", "-1");
       });
+      tab.classList.add("active");
+      tab.setAttribute("aria-current", "page");
+      tab.setAttribute("tabindex", "0");
+      tab.focus();
+
+      activeTab = tab.getAttribute("data-tab");
+      loadTabContent(activeTab);
+    });
+  });
+
+  // --- Game State ---
+  const gameState = {
+    clients: [
+      { id: 1, name: "Acme Corp", description: "Needs a logo with a lion", budget: 500 },
+      { id: 2, name: "Blue Ocean Ltd", description: "Wants a fresh ocean wave logo", budget: 350 }
+    ],
+    projects: [],
+    storeItems: [
+      { id: "brushUpgrade", name: "Brush Upgrade", price: 100, purchased: false },
+      { id: "fontPack", name: "Font Pack", price: 250, purchased: false },
+      { id: "colorPalette", name: "Color Palette", price: 400, purchased: false }
+    ],
+    achievements: [
+      { id: "firstClient", name: "First Client", achieved: false },
+      { id: "fiveProjects", name: "Five Projects Completed", achieved: false },
+      { id: "storeMaster", name: "All Store Items Bought", achieved: false }
+    ],
+    reviews: [],
+    settings: {
+      soundOn: true,
+      themeColor: "#3a6efc"
+    }
+  };
+
+  // === Generate Sample Reviews ===
+  function generateReview(clientName, rating, comment) {
+    return { clientName, rating, comment };
+  }
+
+  function loadReviews() {
+    // Generate sample dynamic reviews based on game projects and clients
+    gameState.reviews = [
+      generateReview("Acme Corp", 5, "Fantastic logo design! Very professional."),
+      generateReview("Blue Ocean Ltd", 4, "Great work, timely delivery."),
+      generateReview("Red Lion", 3, "Good but expected more creativity."),
+      generateReview("Green Fields", 5, "Exceeded expectations! Highly recommend."),
+    ];
+  }
+
+  // === Load Tab Content ===
+  function loadTabContent(tab) {
+    switch(tab) {
+      case "inbox":
+        tabContent.innerHTML = `<h2>Inbox</h2><div id="inbox-area"></div>`;
+        loadClientRequests();
+        break;
+
+      case "store":
+        tabContent.innerHTML = `<h2>Store</h2><div id="store-area"></div>`;
+        loadStore();
+        break;
+
+      case "projects":
+        tabContent.innerHTML = `<h2>Projects</h2><div id="projects-area"></div>`;
+        loadProjects();
+        break;
+
+      case "reviews":
+        tabContent.innerHTML = `<h2>Reviews</h2><div id="reviews-area"></div>`;
+        loadReviewsTab();
+        break;
+
+      case "settings":
+        tabContent.innerHTML = `
+          <h2>Settings</h2>
+          <div id="settings-area">
+            <label>
+              <input type="checkbox" id="toggle-sound" ${gameState.settings.soundOn ? "checked" : ""} />
+              Enable Sound Effects
+            </label>
+            <br/><br/>
+            <label for="theme-color-picker">Theme Color:</label>
+            <input type="color" id="theme-color-picker" value="${gameState.settings.themeColor}" />
+          </div>
+        `;
+        setupSettingsHandlers();
+        break;
+
+      default:
+        tabContent.innerHTML = "<p>Unknown tab.</p>";
+    }
+  }
+
+  // === Inbox: Client Requests ===
+  function loadClientRequests() {
+    const inboxArea = document.getElementById("inbox-area");
+    inboxArea.innerHTML = "";
+
+    gameState.clients.forEach(client => {
+      const clientDiv = document.createElement("div");
+      clientDiv.classList.add("client-request");
+      clientDiv.innerHTML = `
+        <strong>${client.name}</strong><br/>
+        ${client.description}<br/>
+        Budget: $${client.budget}
+        <button onclick="acceptClient(${client.id})">Accept</button>
+      `;
+      inboxArea.appendChild(clientDiv);
+    });
+  }
+
+  function acceptClient(clientId) {
+    const clientIndex = gameState.clients.findIndex(c => c.id === clientId);
+    if (clientIndex === -1) return;
+    const client = gameState.clients[clientIndex];
+
+    alert(`Client "${client.name}" accepted! Project started.`);
+    gameState.projects.push({
+      id: client.id,
+      clientName: client.name,
+      status: "In Progress",
+      progress: 0
     });
 
-    function loadTabContent(tab) {
-      switch(tab) {
-        case "inbox":
-          tabContent.innerHTML = "<h2>Inbox</h2><div id='inbox-area'>Client requests will appear here.</div>";
-          break;
-        case "store":
-          tabContent.innerHTML = "<h2>Store</h2><p>Store your design assets and upgrades here.</p>";
-          break;
-        case "projects":
-          tabContent.innerHTML = "<h2>Projects</h2><p>Manage your current design jobs here.</p>";
-          break;
-        case "reviews":
-          tabContent.innerHTML = "<h2>Reviews</h2><p>Client reviews and ratings go here.</p>";
-          break;
-        case "settings":
-          tabContent.innerHTML = "<h2>Settings</h2><p>Adjust preferences and profile info.</p>";
-          break;
-        default:
-          tabContent.innerHTML = "<p>Unknown tab.</p>";
-      }
+    // Remove client request from inbox
+    gameState.clients.splice(clientIndex, 1);
+    if (activeTab === "inbox") loadClientRequests();
+    if (activeTab === "projects") loadProjects();
+
+    checkAchievements();
+  }
+
+  // === Store ===
+  function loadStore() {
+    const storeArea = document.getElementById("store-area");
+    storeArea.innerHTML = "";
+
+    gameState.storeItems.forEach(item => {
+      const itemDiv = document.createElement("div");
+      itemDiv.style.marginBottom = "1em";
+      itemDiv.innerHTML = `
+        <strong>${item.name}</strong> - $${item.price}
+        <button ${item.purchased ? "disabled" : ""} onclick="buyStoreItem('${item.id}')">
+          ${item.purchased ? "Purchased" : "Buy"}
+        </button>
+      `;
+      storeArea.appendChild(itemDiv);
+    });
+  }
+
+  function buyStoreItem(itemId) {
+    const item = gameState.storeItems.find(i => i.id === itemId);
+    if (!item) return;
+    if (item.purchased) {
+      alert("You already own this item.");
+      return;
+    }
+    // Simplified purchase logic (add real currency check here)
+    item.purchased = true;
+    alert(`Purchased: ${item.name}`);
+    loadStore();
+    checkAchievements();
+  }
+
+  // === Projects ===
+  function loadProjects() {
+    const projectsArea = document.getElementById("projects-area");
+    projectsArea.innerHTML = "";
+    if (gameState.projects.length === 0) {
+      projectsArea.innerHTML = "<p>No active projects.</p>";
+      return;
     }
 
-    // Load default tab on start
-    loadTabContent(activeTab);
+    gameState.projects.forEach(project => {
+      const projDiv = document.createElement("div");
+      projDiv.innerHTML = `
+        <strong>${project.clientName}</strong> - ${project.status}<br/>
+        Progress: ${project.progress}%
+        ${project.status === "In Progress" ? `<button onclick="advanceProject(${project.id})">Advance Progress</button>` : ""}
+      `;
+      projectsArea.appendChild(projDiv);
+    });
+  }
 
-    // === Admin Modal Logic ===
+  function advanceProject(projectId) {
+    const project = gameState.projects.find(p => p.id === projectId);
+    if (!project || project.status !== "In Progress") return;
+    project.progress += 25;
+    if (project.progress >= 100) {
+      project.progress = 100;
+      project.status = "Completed";
+      alert(`Project for "${project.clientName}" completed!`);
+      // Add a review from client on completion:
+      gameState.reviews.push(generateReview(project.clientName, 5, "Amazing work, very satisfied!"));
+      loadReviewsTab();
+    }
+    loadProjects();
+    checkAchievements();
+  }
 
-    const adminLoginModal = document.getElementById("admin-login");
-    const adminPanelModal = document.getElementById("admin-panel");
-    const adminPasswordInput = document.getElementById("admin-password");
-    const adminLoginForm = document.getElementById("admin-login-form");
-    const adminLoginCancel = document.getElementById("admin-login-cancel");
-    const showPasswordCheckbox = document.getElementById("show-password-checkbox");
-
-    const btnUpdateServers = document.getElementById("btn-update-servers");
-    const btnGlobalMessage = document.getElementById("btn-global-message");
-    const btnResetLeaderboard = document.getElementById("btn-reset-leaderboard");
-    const btnCloseAdmin = document.getElementById("btn-close-admin");
-    const globalMsgInputContainer = document.getElementById("global-msg-input-container");
-    const globalMsgInput = document.getElementById("global-msg-input");
-    const btnSendGlobalMsg = document.getElementById("btn-send-global-msg");
-
-    const ADMIN_PASSWORD = "1234";
-    let adminLoggedIn = false;
-
-    function setBodyBlur(active) {
-      if(active) {
-        document.body.style.filter = "blur(2px)";
-        document.body.style.pointerEvents = "none";
-      } else {
-        document.body.style.filter = "none";
-        document.body.style.pointerEvents = "auto";
-      }
+  // === Reviews Tab ===
+  function loadReviewsTab() {
+    const reviewsArea = document.getElementById("reviews-area");
+    reviewsArea.innerHTML = "";
+    if (gameState.reviews.length === 0) {
+      reviewsArea.innerHTML = "<p>No reviews available yet.</p>";
+      return;
     }
 
-    // Show admin login modal
-    function showAdminLogin() {
-      adminLoginModal.classList.add("active");
-      setBodyBlur(true);
+    gameState.reviews.forEach(review => {
+      const stars = "★".repeat(review.rating) + "☆".repeat(5 - review.rating);
+      const reviewDiv = document.createElement("div");
+      reviewDiv.style.marginBottom = "1em";
+      reviewDiv.innerHTML = `
+        <strong>${review.clientName}</strong> &mdash; <span style="color:#ffd700">${stars}</span><br/>
+        "${review.comment}"
+      `;
+      reviewsArea.appendChild(reviewDiv);
+    });
+  }
+
+  // === Settings Handlers ===
+  function setupSettingsHandlers() {
+    const soundCheckbox = document.getElementById("toggle-sound");
+    const themeColorPicker = document.getElementById("theme-color-picker");
+
+    soundCheckbox.addEventListener("change", () => {
+      gameState.settings.soundOn = soundCheckbox.checked;
+      alert(`Sound Effects ${gameState.settings.soundOn ? "enabled" : "disabled"}`);
+    });
+
+    themeColorPicker.addEventListener("input", () => {
+      gameState.settings.themeColor = themeColorPicker.value;
+      document.documentElement.style.setProperty("--theme-color", gameState.settings.themeColor);
+      alert(`Theme color updated to ${gameState.settings.themeColor}`);
+    });
+  }
+
+  // === Achievements Check ===
+  function checkAchievements() {
+    // First Client Achievement
+    if (!gameState.achievements[0].achieved && gameState.projects.length > 0) {
+      gameState.achievements[0].achieved = true;
+      alert("Achievement unlocked: First Client!");
+    }
+    // Five Projects Completed Achievement
+    if (!gameState.achievements[1].achieved && gameState.projects.filter(p => p.status === "Completed").length >= 5) {
+      gameState.achievements[1].achieved = true;
+      alert("Achievement unlocked: Five Projects Completed!");
+    }
+    // All Store Items Bought Achievement
+    if (!gameState.achievements[2].achieved && gameState.storeItems.every(i => i.purchased)) {
+      gameState.achievements[2].achieved = true;
+      alert("Achievement unlocked: Store Master!");
+    }
+  }
+
+  // === Admin Modal Logic ===
+  const adminLoginModal = document.getElementById("admin-login");
+  const adminPanelModal = document.getElementById("admin-panel");
+  const adminPasswordInput = document.getElementById("admin-password");
+  const adminLoginForm = document.getElementById("admin-login-form");
+  const adminLoginCancel = document.getElementById("admin-login-cancel");
+
+  const checkboxWrapper = document.getElementById("show-password-checkbox-wrapper");
+  const checkboxInput = document.getElementById("show-password-checkbox");
+
+  const btnUpdateServers = document.getElementById("btn-update-servers");
+  const btnGlobalMessage = document.getElementById("btn-global-message");
+  const btnResetLeaderboard = document.getElementById("btn-reset-leaderboard");
+  const btnCloseAdmin = document.getElementById("btn-close-admin");
+  const globalMsgInputContainer = document.getElementById("global-msg-input-container");
+  const globalMsgInput = document.getElementById("global-msg-input");
+  const btnSendGlobalMsg = document.getElementById("btn-send-global-msg");
+
+  const wrongPasswordBox = document.getElementById("wrong-password-box");
+
+  const ADMIN_PASSWORD = "1234";
+  let adminLoggedIn = false;
+
+  function showAdminLogin() {
+    adminLoginModal.classList.add("active");
+    adminLoginModal.setAttribute("aria-hidden", "false");
+    setBodyBlur(true);
+    adminPasswordInput.focus();
+  }
+
+  function hideAdminLogin() {
+    adminLoginModal.classList.remove("active");
+    adminLoginModal.setAttribute("aria-hidden", "true");
+    setBodyBlur(false);
+    adminPasswordInput.value = "";
+    checkboxInput.checked = false;
+    adminPasswordInput.type = "password";
+    updateCheckboxAria();
+  }
+
+  function openAdminPanel() {
+    if (!adminLoggedIn) {
+      showAdminLogin();
+      return;
+    }
+    adminPanelModal.classList.add("active");
+    adminPanelModal.setAttribute("aria-hidden", "false");
+    setBodyBlur(true);
+    globalMsgInputContainer.style.display = "none";
+    globalMsgInput.value = "";
+    globalMsgInput.setAttribute("aria-hidden", "true");
+  }
+
+  function closeAdminPanel() {
+    adminPanelModal.classList.remove("active");
+    adminPanelModal.setAttribute("aria-hidden", "true");
+    setBodyBlur(false);
+  }
+
+  function setBodyBlur(active) {
+    if (active) {
+      document.body.classList.add("blur-active");
+    } else {
+      document.body.classList.remove("blur-active");
+    }
+  }
+
+  // Animate wrong password input: shake + fade red then back to normal
+  function animateWrongPassword(input) {
+    input.classList.add("wrong-password");
+    wrongPasswordBox.textContent = "Incorrect Password";
+    wrongPasswordBox.classList.add("active");
+
+    setTimeout(() => {
+      input.classList.remove("wrong-password");
+    }, 500);
+
+    setTimeout(() => {
+      wrongPasswordBox.classList.remove("active");
+    }, 2000);
+  }
+
+  // Checkbox ARIA update helper
+  function updateCheckboxAria() {
+    checkboxWrapper.setAttribute("aria-checked", checkboxInput.checked.toString());
+  }
+
+  // Checkbox toggle handlers with keyboard support
+  checkboxWrapper.addEventListener("click", () => {
+    checkboxInput.checked = !checkboxInput.checked;
+    adminPasswordInput.type = checkboxInput.checked ? "text" : "password";
+    updateCheckboxAria();
+    adminPasswordInput.focus();
+  });
+
+  checkboxWrapper.addEventListener("keydown", e => {
+    if (e.key === " " || e.key === "Enter") {
+      e.preventDefault();
+      checkboxInput.checked = !checkboxInput.checked;
+      adminPasswordInput.type = checkboxInput.checked ? "text" : "password";
+      updateCheckboxAria();
       adminPasswordInput.focus();
     }
+  });
 
-    // Hide admin login modal
-    function hideAdminLogin() {
-      adminLoginModal.classList.remove("active");
-      setBodyBlur(false);
+  updateCheckboxAria();
+
+  adminLoginCancel.addEventListener("click", hideAdminLogin);
+
+  adminLoginForm.addEventListener("submit", e => {
+    e.preventDefault();
+    if (adminPasswordInput.value === ADMIN_PASSWORD) {
+      adminLoggedIn = true;
+      hideAdminLogin();
+      openAdminPanel();
+      alert("Admin login successful.");
+    } else {
+      animateWrongPassword(adminPasswordInput);
       adminPasswordInput.value = "";
-      showPasswordCheckbox.checked = false;
-      adminPasswordInput.type = "password";
+      adminPasswordInput.focus();
     }
+  });
 
-    // Show admin panel modal
-    function openAdminPanel() {
-      if(!adminLoggedIn) {
-        showAdminLogin();
-        return;
-      }
-      adminPanelModal.classList.add("active");
-      setBodyBlur(true);
-      globalMsgInputContainer.style.display = "none";
-      globalMsgInput.value = "";
-      globalMsgInput.setAttribute("aria-hidden", "true");
-    }
+  btnCloseAdmin.addEventListener("click", () => {
+    adminLoggedIn = false;
+    closeAdminPanel();
+    alert("Logged out successfully.");
+  });
 
-    // Close admin panel modal
-    function closeAdminPanel() {
-      adminPanelModal.classList.remove("active");
-      setBodyBlur(false);
-    }
+  btnUpdateServers.addEventListener("click", () => {
+    alert("Update Servers command sent.");
+    // Implement real server update logic here
+  });
 
-    adminLoginCancel.addEventListener("click", hideAdminLogin);
+  btnResetLeaderboard.addEventListener("click", () => {
+    alert("Reset Leaderboard command sent.");
+    // Implement real leaderboard reset logic here
+  });
 
-    showPasswordCheckbox.addEventListener("change", () => {
-      adminPasswordInput.type = showPasswordCheckbox.checked ? "text" : "password";
-    });
+  btnGlobalMessage.addEventListener("click", () => {
+    globalMsgInputContainer.style.display = "flex";
+    globalMsgInput.setAttribute("aria-hidden", "false");
+    globalMsgInput.focus();
+  });
 
-    // Animation and error box for wrong password
-    function animateWrongPassword(input) {
-      const errorBox = document.getElementById("wrong-password-box");
-
-      input.classList.add("wrong-password");
-
-      setTimeout(() => {
-        input.classList.remove("wrong-password");
-      }, 1000);
-
-      errorBox.classList.add("active");
-
-      setTimeout(() => {
-        errorBox.classList.remove("active");
-      }, 2200);
-    }
-
-    adminLoginForm.addEventListener("submit", e => {
-      e.preventDefault();
-      if(adminPasswordInput.value === ADMIN_PASSWORD) {
-        adminLoggedIn = true;
-        hideAdminLogin();
-        openAdminPanel();
-      } else {
-        animateWrongPassword(adminPasswordInput);
-        adminPasswordInput.value = "";
-        adminPasswordInput.focus();
-      }
-    });
-
-    btnCloseAdmin.addEventListener("click", closeAdminPanel);
-
-    btnUpdateServers.addEventListener("click", () => {
-      sendAdminCommand("updateServers");
-      alert("Update Servers command sent.");
-    });
-
-    btnResetLeaderboard.addEventListener("click", () => {
-      sendAdminCommand("resetLeaderboard");
-      alert("Reset Leaderboard command sent.");
-    });
-
-    btnGlobalMessage.addEventListener("click", () => {
-      globalMsgInputContainer.style.display = "flex";
-      globalMsgInput.setAttribute("aria-hidden", "false");
+  btnSendGlobalMsg.addEventListener("click", () => {
+    const msg = globalMsgInput.value.trim();
+    if (msg.length === 0) {
+      alert("Please enter a message before sending.");
       globalMsgInput.focus();
-    });
-
-    btnSendGlobalMsg.addEventListener("click", () => {
-      const msg = globalMsgInput.value.trim();
-      if(msg.length === 0) {
-        alert("Please enter a message before sending.");
-        globalMsgInput.focus();
-        return;
-      }
-      sendAdminCommand("globalMessage", { message: msg });
-      alert(`Global message sent: "${msg}"`);
-      globalMsgInput.value = "";
-      globalMsgInputContainer.style.display = "none";
-      globalMsgInput.setAttribute("aria-hidden", "true");
-    });
-
-    // Keyboard shortcut Ctrl+Shift+A to open admin modal or panel
-    document.addEventListener("keydown", e => {
-      if(e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
-        e.preventDefault();
-        if(adminLoggedIn) openAdminPanel();
-        else showAdminLogin();
-      }
-    });
-
-    // --- Socket.IO Client Setup ---
-    // Use your backend URL here
-    const socket = io("https://54e8d8d0-27d5-47ba-a3b6-27b89ee9c980-00-1c8ney7773dr3.kirk.replit.dev", {
-      transports: ["websocket"],
-    });
-
-    socket.on("globalMessage", message => {
-      alert(`Global message: ${message}`);
-    });
-
-    socket.on("leaderboardReset", () => {
-      alert("Leaderboard has been reset by Admin.");
-      // Add reset logic here
-    });
-
-    socket.on("updateServers", () => {
-      alert("Server has been updated.");
-      // Add update logic here
-    });
-
-    // Send commands to server
-    function sendAdminCommand(command, payload = {}) {
-      socket.emit(`admin:${command}`, payload);
+      return;
     }
-  </script>
+    alert(`Global message sent: "${msg}"`);
+    // Implement real global message sending here
+    globalMsgInput.value = "";
+    globalMsgInputContainer.style.display = "none";
+    globalMsgInput.setAttribute("aria-hidden", "true");
+  });
 
-  <!-- Load Socket.IO client from CDN -->
-  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js" integrity="sha384-C+zKvXPy5P0Qmq5UqpiAy48/kVK82nObI9MX4QpBqw4tTY5h8XZOKhGmePR7hcqF" crossorigin="anonymous"></script>
+  // Keyboard shortcut Ctrl+Shift+A to open admin modal or panel
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
+      e.preventDefault();
+      if (adminLoggedIn) openAdminPanel();
+      else showAdminLogin();
+    }
+  });
 
-  </body>
-  </html>
+  // Load default tab on start
+  loadTabContent(activeTab);
+  loadReviews();
+</script>
+</body>
+</html>

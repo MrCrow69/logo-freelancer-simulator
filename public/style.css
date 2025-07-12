@@ -1,5 +1,104 @@
+/* Reset & base */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0a0f1e;
+  color: #cce6ff;
+  --theme-color: #3a6efc;
+  user-select: none;
+  transition: background-color 0.4s ease;
+}
+
+/* Blur active when modal open */
+body.blur-active > #main-content {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Header with tabs */
+header {
+  background: linear-gradient(90deg, var(--theme-color), #1f4ed9);
+  padding: 1rem 0;
+  text-align: center;
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: white;
+  user-select: none;
+}
+
+/* Tabs container */
+nav {
+  display: flex;
+  justify-content: center;
+  background-color: #13203d;
+  border-bottom: 2px solid var(--theme-color);
+}
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: #88bbffcc;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+  border-bottom: 3px solid transparent;
+}
+.tab-btn:hover {
+  color: var(--theme-color);
+}
+.tab-btn.active {
+  color: white;
+  border-bottom: 3px solid var(--theme-color);
+}
+.tab-btn:focus {
+  outline: none;
+  box-shadow: 0 0 8px var(--theme-color);
+}
+
+/* Main content area */
+#content {
+  padding: 1.5rem 2rem;
+  min-height: 450px;
+}
+
+/* Client requests, store items, projects, reviews styles */
+#inbox-area div.client-request,
+#store-area div,
+#projects-area div,
+#reviews-area div {
+  background: #13203d;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #1f4386;
+}
+
+button {
+  background-color: var(--theme-color);
+  border: none;
+  color: white;
+  font-weight: 700;
+  padding: 0.5em 1.2em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 0.5rem;
+}
+button:hover:not(:disabled) {
+  background-color: #1f4ed9;
+}
+button:disabled {
+  background-color: #444;
+  cursor: default;
+}
+
 /* === Admin Login Modal === */
-#admin-login {
+#admin-login, #admin-panel {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(10, 15, 30, 0.85);
@@ -12,16 +111,16 @@
   pointer-events: none;
   transition: opacity 0.3s ease;
 }
-#admin-login.active {
+#admin-login.active, #admin-panel.active {
   opacity: 1;
   pointer-events: auto;
 }
-#admin-login .modal-content {
+#admin-login .modal-content, #admin-panel .admin-content {
   background: #13203d;
   padding: 2.5em 3em;
   border-radius: 12px;
   width: 400px;
-  box-shadow: 0 0 30px #3a6efccc;
+  box-shadow: 0 0 30px var(--theme-color);
   color: #cce6ff;
   font-family: "Segoe UI", sans-serif;
   user-select: none;
@@ -29,11 +128,11 @@
   flex-direction: column;
   gap: 1.2em;
 }
-#admin-login h2 {
+#admin-login h2, #admin-panel h2 {
   margin: 0;
   font-weight: 900;
   font-size: 1.8em;
-  color: #3a6efc;
+  color: var(--theme-color);
   text-align: center;
 }
 #admin-login input[type="password"] {
@@ -51,8 +150,9 @@
 }
 #admin-login input[type="password"]:focus {
   outline: none;
-  box-shadow: 0 0 12px #3a6efc;
+  box-shadow: 0 0 12px var(--theme-color);
 }
+/* Themed checkbox */
 #admin-login label.checkbox-wrapper {
   color: #88bbffcc;
   display: flex;
@@ -60,19 +160,20 @@
   gap: 0.6em;
   font-weight: 600;
   user-select: none;
+  cursor: pointer;
 }
 #admin-login input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #3a6efc;
   cursor: pointer;
+  accent-color: var(--theme-color);
 }
 #admin-login .modal-buttons {
   display: flex;
   justify-content: space-between;
 }
 #admin-login .btn {
-  background-color: #3a6efc;
+  background-color: var(--theme-color);
   border: none;
   color: white;
   padding: 0.7em 2em;
@@ -91,47 +192,9 @@
 #admin-login .btn.btn-cancel:hover {
   background-color: #444;
 }
-
-/* === Admin Panel Modal === */
-#admin-panel {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(10, 15, 30, 0.85);
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10001;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-#admin-panel.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-#admin-panel .admin-content {
-  background: #13203d;
-  padding: 2.5em 3em;
-  border-radius: 12px;
-  width: 360px;
-  box-shadow: 0 0 30px #3a6efccc;
-  color: #3a6efc;
-  font-family: "Segoe UI", sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 1.2em;
-  user-select: none;
-}
-#admin-panel h2 {
-  margin: 0 0 1em 0;
-  font-weight: 900;
-  font-size: 1.8em;
-  color: #3a6efc;
-  text-align: center;
-}
+/* Admin Panel buttons */
 #admin-panel button {
-  background-color: #3a6efc;
+  background-color: var(--theme-color);
   border: none;
   color: white;
   padding: 0.7em 1.2em;
@@ -161,8 +224,7 @@
   font-family: "Segoe UI", sans-serif;
   font-weight: 600;
 }
-
-/* === Shake Animation for Wrong Password === */
+/* Shake Animation for Wrong Password */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-8px); }
@@ -173,19 +235,18 @@
   color: red !important;
   transition: color 0.5s ease 0.5s;
 }
-
-/* === Top Wrong Password Box === */
+/* Top Wrong Password Box */
 #wrong-password-box {
   position: fixed;
   top: -40px;
   left: 50%;
   transform: translateX(-50%);
-  background: #3a6efc;
+  background: var(--theme-color);
   color: white;
   padding: 8px 18px;
   border-radius: 10px;
   font-weight: 700;
-  box-shadow: 0 0 15px #3a6efccc;
+  box-shadow: 0 0 15px var(--theme-color);
   user-select: none;
   opacity: 0;
   pointer-events: none;
@@ -197,110 +258,27 @@
   opacity: 1;
   pointer-events: auto;
 }
-/* Modal overlay styling */
-.modal {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(10, 15, 30, 0.85);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-.modal.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Modal content box */
-.modal-content {
-  background: #13203d;
-  padding: 2.5em 3em;
-  border-radius: 16px;
-  width: 420px;
-  box-shadow: 0 0 30px #3a6efccc;
-  color: #cceeff;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  user-select: none;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 1em;
-}
-
-/* Heading */
-.modal-content h2 {
-  margin-top: 0;
-  font-weight: 900;
-  font-size: 1.7rem;
-  color: #3a6efc;
-  text-align: center;
-}
-
-/* Password input */
-.modal-content input[type="password"] {
-  width: 100%;
-  padding: 0.7em 1em;
+/* Settings area */
+#settings-area {
   font-size: 1.1rem;
-  border-radius: 12px;
-  border: none;
-  background-color: #0f1a2e;
-  color: #dce8ff;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  font-family: monospace;
-  box-shadow: inset 0 0 6px #004b9b;
-  transition: box-shadow 0.25s ease;
 }
-.modal-content input[type="password"]:focus {
-  outline: none;
-  box-shadow: 0 0 14px #3a6efc;
-}
-
-/* Checkbox wrapper */
-.checkbox-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.6em;
-  font-weight: 600;
-  color: #88ccffcc;
+#settings-area label {
+  cursor: pointer;
   user-select: none;
 }
-.checkbox-wrapper input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: #3a6efc;
+#settings-area input[type="checkbox"] {
+  margin-right: 0.6rem;
+  accent-color: var(--theme-color);
   cursor: pointer;
+  transform: scale(1.2);
+  vertical-align: middle;
 }
-
-/* Modal buttons container */
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-}
-
-/* Buttons */
-.btn {
-  background-color: #3a6efc;
+#settings-area input[type="color"] {
+  margin-left: 0.5rem;
+  cursor: pointer;
   border: none;
-  color: white;
-  padding: 0.8em 1.8em;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 1.1rem;
-  transition: background-color 0.3s ease;
-}
-.btn:hover {
-  background-color: #1f4ed9;
-}
-.btn-cancel {
-  background-color: #222;
-}
-.btn-cancel:hover {
-  background-color: #444;
+  width: 50px;
+  height: 32px;
+  vertical-align: middle;
+  background: none;
 }
