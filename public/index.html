@@ -414,30 +414,26 @@
   </div>
 
   <!-- Admin panel modal -->
-<div id="admin-login" role="dialog" aria-modal="true" aria-labelledby="admin-login-title">
-  <div class="modal-content">
-    <h2 id="admin-login-title">Admin Login</h2>
-    <form id="admin-login-form">
-      <label for="admin-password">Password:</label>
-      <input id="admin-password" type="password" autocomplete="current-password" required />
-
-      <div class="checkbox-wrapper" tabindex="0" role="checkbox" aria-checked="false" id="show-password-checkbox-wrapper">
-        <input type="checkbox" id="show-password-checkbox" />
-        <div class="checkbox-custom" aria-hidden="true"></div>
-        <span>Show Password</span>
-      </div>
-
-      <div id="wrong-password-box" aria-live="assertive" role="alert" class="wrong-password-message">
-        Wrong password! Please try again.
-      </div>
-
-      <div class="buttons">
-        <button type="submit">Login</button>
-        <button type="button" id="admin-login-cancel">Cancel</button>
-      </div>
-    </form>
+<form id="admin-login-form" autocomplete="off" novalidate>
+  <input
+    type="password"
+    id="admin-password"
+    aria-describedby="password-help"
+    aria-invalid="false"
+    placeholder="Enter Admin Password"
+    autocomplete="new-password"
+    required
+  />
+  <div class="checkbox-wrapper">
+    <input type="checkbox" id="show-password-checkbox" />
+    <label for="show-password-checkbox">Show Password</label>
   </div>
-</div>
+  <div class="modal-buttons">
+    <button type="submit" class="btn">Login</button>
+    <button type="button" id="admin-login-cancel" class="btn btn-cancel">Cancel</button>
+  </div>
+</form>
+
 
 
   <!-- Wrong password notification -->
