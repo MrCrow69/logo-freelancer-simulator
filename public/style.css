@@ -1,4 +1,4 @@
-/* Admin Login Modal */
+/* === Admin Login Modal === */
 #admin-login {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -21,7 +21,7 @@
   padding: 2.5em 3em;
   border-radius: 12px;
   width: 400px;
-  box-shadow: 0 0 30px #005affcc;
+  box-shadow: 0 0 30px #3a6efccc;
   color: #cce6ff;
   font-family: "Segoe UI", sans-serif;
   user-select: none;
@@ -33,7 +33,7 @@
   margin: 0;
   font-weight: 900;
   font-size: 1.8em;
-  color: #4fc3f7;
+  color: #3a6efc;
   text-align: center;
 }
 #admin-login input[type="password"] {
@@ -72,7 +72,7 @@
   justify-content: space-between;
 }
 #admin-login .btn {
-  background-color: #1f4386;
+  background-color: #3a6efc;
   border: none;
   color: white;
   padding: 0.7em 2em;
@@ -83,7 +83,7 @@
   transition: background-color 0.3s ease;
 }
 #admin-login .btn:hover {
-  background-color: #3a6efc;
+  background-color: #1f4ed9;
 }
 #admin-login .btn.btn-cancel {
   background-color: #222;
@@ -92,7 +92,7 @@
   background-color: #444;
 }
 
-/* Admin Panel Modal */
+/* === Admin Panel Modal === */
 #admin-panel {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -131,7 +131,7 @@
   text-align: center;
 }
 #admin-panel button {
-  background-color: #1f4386;
+  background-color: #3a6efc;
   border: none;
   color: white;
   padding: 0.7em 1.2em;
@@ -142,7 +142,7 @@
   transition: background-color 0.3s ease;
 }
 #admin-panel button:hover {
-  background-color: #3a6efc;
+  background-color: #1f4ed9;
 }
 #global-msg-input-container {
   display: none;
@@ -161,18 +161,20 @@
   font-family: "Segoe UI", sans-serif;
   font-weight: 600;
 }
+
+/* === Shake Animation for Wrong Password === */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-8px); }
   40%, 80% { transform: translateX(8px); }
 }
-
 .wrong-password {
   animation: shake 0.5s ease;
   color: red !important;
-  transition: color 0.5s ease 0.5s; /* revert color after shake */
+  transition: color 0.5s ease 0.5s;
 }
 
+/* === Top Wrong Password Box === */
 #wrong-password-box {
   position: fixed;
   top: -40px;
@@ -190,7 +192,6 @@
   transition: top 0.4s ease, opacity 0.4s ease;
   z-index: 2100;
 }
-
 #wrong-password-box.active {
   top: 20px;
   opacity: 1;
