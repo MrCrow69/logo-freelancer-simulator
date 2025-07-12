@@ -51,7 +51,9 @@ const adminPanelModal = document.getElementById("admin-panel");
 const adminPasswordInput = document.getElementById("admin-password");
 const adminLoginForm = document.getElementById("admin-login-form");
 const adminLoginCancel = document.getElementById("admin-login-cancel");
-const showPasswordCheckbox = document.getElementById("show-password-checkbox");
+
+const checkboxWrapper = document.getElementById("show-password-checkbox-wrapper");
+const checkboxInput = document.getElementById("show-password-checkbox");
 
 const btnUpdateServers = document.getElementById("btn-update-servers");
 const btnGlobalMessage = document.getElementById("btn-global-message");
@@ -66,9 +68,13 @@ const wrongPasswordBox = document.getElementById("wrong-password-box");
 const ADMIN_PASSWORD = "1234";
 let adminLoggedIn = false;
 
+// Blur control applies a class on body to blur only page content
 function setBodyBlur(active) {
-  document.body.style.filter = active ? "blur(2px)" : "none";
-  document.body.style.pointerEvents = active ? "none" : "auto";
+  if (active) {
+    document.body.classList.add("blur-active");
+  } else {
+    document.body.classList.remove("blur-active");
+  }
 }
 
 // Show admin login modal
@@ -83,8 +89,9 @@ function hideAdminLogin() {
   adminLoginModal.classList.remove("active");
   setBodyBlur(false);
   adminPasswordInput.value = "";
-  showPasswordCheckbox.checked = false;
+  checkboxInput.checked = false;
   adminPasswordInput.type = "password";
+  updateCheckboxAria();
 }
 
 // Show admin panel modal
@@ -120,12 +127,33 @@ function animateWrongPassword(input) {
   }, 2200);
 }
 
-// Event listeners
-adminLoginCancel.addEventListener("click", hideAdminLogin);
+// Checkbox ARIA update helper
+function updateCheckboxAria() {
+  checkboxWrapper.setAttribute("aria-checked", checkboxInput.checked.toString());
+}
 
-showPasswordCheckbox.addEventListener("change", () => {
-  adminPasswordInput.type = showPasswordCheckbox.checked ? "text" : "password";
+// Checkbox toggle handlers with keyboard support
+checkboxWrapper.addEventListener("click", () => {
+  checkboxInput.checked = !checkboxInput.checked;
+  adminPasswordInput.type = checkboxInput.checked ? "text" : "password";
+  updateCheckboxAria();
+  adminPasswordInput.focus();
 });
+
+checkboxWrapper.addEventListener("keydown", e => {
+  if (e.key === " " || e.key === "Enter") {
+    e.preventDefault();
+    checkboxInput.checked = !checkboxInput.checked;
+    adminPasswordInput.type = checkboxInput.checked ? "text" : "password";
+    updateCheckboxAria();
+    adminPasswordInput.focus();
+  }
+});
+
+// Sync ARIA initially
+updateCheckboxAria();
+
+adminLoginCancel.addEventListener("click", hideAdminLogin);
 
 adminLoginForm.addEventListener("submit", e => {
   e.preventDefault();

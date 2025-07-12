@@ -197,3 +197,159 @@
   opacity: 1;
   pointer-events: auto;
 }
+/* Wrap your entire page content (excluding modals) in a div#page-content */
+/* This is to enable blur only behind modals */
+body.blur-active > #page-content {
+  filter: blur(2px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Admin login modal styles */
+#admin-login {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 30, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#admin-login.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#admin-login .modal-content {
+  background: #13203d;
+  padding: 2.5em 3em;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 0 30px #3a6efccc;
+  color: #cce6ff;
+  font-family: "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+  position: relative;
+  z-index: 10100;
+  user-select: none;
+}
+
+/* Custom Checkbox Styles */
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  font-weight: 600;
+  color: #88bbffcc;
+  user-select: none;
+  cursor: pointer;
+  position: relative;
+  font-size: 1rem;
+}
+
+/* Hide native checkbox but keep it accessible */
+.checkbox-wrapper input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Custom box */
+.checkbox-custom {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: #0f1a2e;
+  border: 2.5px solid #3a6efc;
+  box-shadow: inset 0 0 6px #004b9b;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Checkmark */
+.checkbox-custom::after {
+  content: "";
+  width: 10px;
+  height: 6px;
+  border-left: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  transform: rotate(-45deg);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-color: #3a6efc;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  position: relative;
+  box-sizing: content-box;
+}
+
+/* Show checkmark when checked */
+.checkbox-wrapper input[type="checkbox"]:checked + .checkbox-custom::after {
+  opacity: 1;
+  border-left: 3px solid #3a6efc;
+  border-bottom: 3px solid #3a6efc;
+}
+
+/* Label text */
+.checkbox-wrapper span {
+  user-select: none;
+  color: #88bbffcc;
+}
+
+/* Password input styling */
+#admin-password {
+  background-color: #0f1a2e;
+  color: #cce6ff;
+  font-family: monospace;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  font-size: 1.1em;
+  padding: 0.7em 1em;
+  border-radius: 8px;
+  border: none;
+  box-shadow: inset 0 0 6px #1f4386;
+  cursor: text;
+  transition: box-shadow 0.25s ease;
+}
+
+#admin-password:focus {
+  outline: none;
+  box-shadow: 0 0 12px #3a6efc;
+}
+
+/* Wrong password animation */
+.wrong-password {
+  animation: shake 0.4s ease;
+  border: 2px solid #ff4c4c !important;
+}
+
+#wrong-password-box {
+  display: none;
+  color: #ff4c4c;
+  font-weight: 700;
+  font-size: 0.9em;
+  margin-top: 0.3em;
+  user-select: none;
+}
+
+#wrong-password-box.active {
+  display: block;
+}
+
+/* Shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-6px); }
+}

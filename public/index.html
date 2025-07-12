@@ -414,19 +414,31 @@
   </div>
 
   <!-- Admin panel modal -->
-  <div class="modal" id="admin-panel" role="dialog" aria-modal="true" aria-labelledby="admin-panel-title" tabindex="-1">
-    <div class="admin-content">
-      <h2 id="admin-panel-title">Admin Panel</h2>
-      <button id="btn-update-servers" type="button">Update Servers</button>
-      <button id="btn-reset-leaderboard" type="button">Reset Leaderboard</button>
-      <button id="btn-global-message" type="button">Send Global Message</button>
-      <div id="global-msg-input-container">
-        <input type="text" id="global-msg-input" aria-label="Global message input" />
-        <button id="btn-send-global-msg" type="button">Send</button>
+<div id="admin-login" role="dialog" aria-modal="true" aria-labelledby="admin-login-title">
+  <div class="modal-content">
+    <h2 id="admin-login-title">Admin Login</h2>
+    <form id="admin-login-form">
+      <label for="admin-password">Password:</label>
+      <input id="admin-password" type="password" autocomplete="current-password" required />
+
+      <div class="checkbox-wrapper" tabindex="0" role="checkbox" aria-checked="false" id="show-password-checkbox-wrapper">
+        <input type="checkbox" id="show-password-checkbox" />
+        <div class="checkbox-custom" aria-hidden="true"></div>
+        <span>Show Password</span>
       </div>
-      <button id="btn-close-admin" type="button" style="margin-top: 1.2em; background: #222;">Close</button>
-    </div>
+
+      <div id="wrong-password-box" aria-live="assertive" role="alert" class="wrong-password-message">
+        Wrong password! Please try again.
+      </div>
+
+      <div class="buttons">
+        <button type="submit">Login</button>
+        <button type="button" id="admin-login-cancel">Cancel</button>
+      </div>
+    </form>
   </div>
+</div>
+
 
   <!-- Wrong password notification -->
   <div id="wrong-password-box" role="alert" aria-live="assertive">Wrong password</div>
